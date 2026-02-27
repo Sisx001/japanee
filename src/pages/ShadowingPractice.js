@@ -13,7 +13,7 @@ import {
 } from 'lucide-react';
 import { MASSIVE_SENTENCES } from '@/data/MassiveSentences';
 import useSpeechRecognition from '@/hooks/useSpeechRecognition';
-import { TranslateHelper } from '@/components/ui/TranslateHelper';
+import { TranslateHelper } from '@/components/ui/TranslateHelper.jsx';
 
 const ShadowingPractice = () => {
     const { profile, settings, addExperience } = useProfile();

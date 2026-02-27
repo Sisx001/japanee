@@ -8,7 +8,7 @@ import {
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useAudio } from '@/context/AudioContext';
-import ZenCursor from '../ui/ZenCursor';
+import ZenCursor from '../ui/ZenCursor.jsx';
 import JapaneseBackground from '../ui/JapaneseBackground';
 
 export const MainLayout = ({ children }) => {
