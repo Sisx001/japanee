@@ -133,13 +133,19 @@ const EbookReader = () => {
                             style={{ minHeight: '400px', height: '100%' }}
                             title={activeEbook.title}
                         />
-                        <div className="lg:hidden p-4 bg-white/50 dark:bg-black/50 backdrop-blur-md flex justify-center">
+                        <div className="lg:hidden p-6 bg-amber-500/10 dark:bg-amber-900/20 backdrop-blur-md flex flex-col items-center gap-4 text-center border-t border-amber-500/20">
+                            <div className="flex items-center gap-2 text-amber-600 dark:text-amber-400 font-black text-[10px] tracking-widest uppercase">
+                                <Sparkles className="w-4 h-4" /> PERFORMANCE CAUTION
+                            </div>
+                            <p className="text-[10px] font-bold text-slate-500 uppercase leading-relaxed">
+                                MOBILE VIEWERS MAY REQUIRE SYSTEM ASSISTANCE FOR LARGE DATA DOCUMENTS.
+                            </p>
                             <Button
                                 variant="outline"
-                                className="w-full rounded-xl border-rose-500/20 text-rose-500 font-bold"
+                                className="w-full h-14 rounded-2xl border-rose-500 bg-rose-500 text-white font-black italic shadow-lg shadow-rose-500/20"
                                 onClick={() => window.open(activeEbook.url, '_blank')}
                             >
-                                OPEN IN SYSTEM VIEWER
+                                OPEN IN TRADITIONAL VIEWER
                             </Button>
                         </div>
                         <div className="absolute inset-0 pointer-events-none border-[10px] md:border-[20px] border-black/5 rounded-[2rem] md:rounded-[3.5rem]"></div>

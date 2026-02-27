@@ -52,7 +52,7 @@ const Dashboard = () => {
     { icon: '漢', title: 'Kanji', subtitle: `${progress.kanjiLearned?.length || 0}/${totalKanji}`, path: '/kanji', color: 'bg-purple-500 shadow-purple-500/20' },
     { icon: '単', title: 'Vocabulary', subtitle: `${progress.vocabLearned?.length || 0} words`, path: '/vocab', color: 'bg-green-500 shadow-green-500/20' },
     { icon: '🎙️', title: 'Shadowing', subtitle: 'Voice Practice', path: '/practice/shadowing', color: 'bg-orange-500 shadow-orange-500/20' },
-    { icon: '📚', title: 'Library', subtitle: 'Ebook Hub', path: '/library', color: 'bg-indigo-500 shadow-indigo-500/20' },
+    { icon: '📚', title: 'Library', subtitle: 'Ebook Hub', path: '/ebooks', color: 'bg-indigo-500 shadow-indigo-500/20' },
   ];
 
 
@@ -183,17 +183,17 @@ const Dashboard = () => {
                 <div className="w-10 h-0.5 bg-rose-500/20" />
               </div>
             </div>
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-4">
               {quickActions.map((action, idx) => (
                 <Link key={idx} to={action.path} className="group">
-                  <Card className="glass rounded-[2rem] border-rose-500/5 group-hover:border-rose-500/20 transition-all duration-500 h-full relative overflow-hidden group-hover:shadow-2xl">
+                  <Card className="glass rounded-[1.5rem] md:rounded-[2rem] border-rose-500/5 group-hover:border-rose-500/20 transition-all duration-500 h-full relative overflow-hidden group-hover:shadow-2xl">
                     <div className="absolute inset-0 opacity-[0.02] pointer-events-none group-hover:opacity-[0.05] transition-opacity" style={{ backgroundImage: seigaihaPattern }} />
-                    <CardContent className="p-8 relative z-10 flex flex-col items-center text-center">
-                      <div className={`w-16 h-16 ${action.color} rounded-2xl flex items-center justify-center text-white text-3xl font-black shadow-xl mb-4 group-hover:scale-110 transition-transform`}>
+                    <CardContent className="p-4 md:p-8 relative z-10 flex flex-col items-center text-center">
+                      <div className={`w-12 h-12 md:w-16 md:h-16 ${action.color} rounded-xl md:rounded-2xl flex items-center justify-center text-white text-xl md:text-3xl font-black shadow-xl mb-3 md:mb-4 group-hover:scale-110 transition-transform`}>
                         {action.icon}
                       </div>
-                      <h3 className="font-black text-xs group-hover:text-rose-600 transition-colors uppercase tracking-[0.2em] mb-1">{action.title}</h3>
-                      <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400 italic opacity-80">{action.subtitle}</p>
+                      <h3 className="font-black text-[10px] md:text-xs group-hover:text-rose-600 transition-colors uppercase tracking-[0.1em] md:tracking-[0.2em] mb-1">{action.title}</h3>
+                      <p className="text-[8px] md:text-[10px] font-bold uppercase tracking-widest text-slate-400 italic opacity-80">{action.subtitle}</p>
                     </CardContent>
                   </Card>
                 </Link>

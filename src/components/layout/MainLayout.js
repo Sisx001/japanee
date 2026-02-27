@@ -136,7 +136,7 @@ export const MainLayout = ({ children }) => {
       </header>
 
       {/* Main Content Area */}
-      <main className="container mx-auto px-4 py-6 md:px-6 md:py-10 max-w-6xl overflow-x-hidden">
+      <main className="container mx-auto px-4 py-6 md:px-6 md:py-10 max-w-6xl overflow-x-hidden pb-32 md:pb-10">
         {children}
       </main>
 

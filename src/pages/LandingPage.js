@@ -58,9 +58,8 @@ const LandingPage = () => {
           </div>
 
           <div className="relative inline-block mb-10 md:mb-12 group px-4">
-            <h1 className="text-4xl sm:text-7xl md:text-8xl lg:text-[10rem] font-black tracking-tighter leading-[0.9] md:leading-[0.8] mb-4">
-              NIHONGO<br />
-              <span className="text-rose-500 italic">ZEN</span> <span className="text-slate-900 dark:text-white">ACADEMY</span>
+            <h1 className="text-[10vw] sm:text-7xl md:text-8xl lg:text-[10rem] font-black tracking-tighter leading-[0.9] md:leading-[0.8] mb-4 whitespace-nowrap">
+              NIHONGO <span className="text-rose-500 italic">ZEN</span> <span className="text-slate-900 dark:text-white">ACADEMY</span>
             </h1>
             <div className="absolute -right-12 top-0 vertical-text hidden lg:block opacity-40">
               <span className="text-2xl font-black japanese-text tracking-widest text-rose-500">学習システム</span>
@@ -101,13 +100,13 @@ const LandingPage = () => {
         <div className="container mx-auto max-w-6xl">
           <div className="flex md:grid md:grid-cols-5 gap-2 md:gap-4 overflow-x-auto pb-4 md:pb-0 no-scrollbar">
             {stats.map((stat, idx) => (
-              <div key={idx} className="group relative bg-white/40 dark:bg-slate-900/40 backdrop-blur-3xl border border-rose-500/10 p-3 md:p-8 rounded-2xl md:rounded-[3rem] hover:border-rose-500/50 transition-all duration-500 hover:-translate-y-2 overflow-hidden flex-shrink-0 w-[100px] md:w-auto h-24 md:h-auto flex flex-col justify-center">
+              <div key={idx} className="group relative bg-white/40 dark:bg-slate-900/40 backdrop-blur-3xl border border-rose-500/10 p-3 md:p-8 rounded-2xl md:rounded-[3rem] hover:border-rose-500/50 transition-all duration-500 hover:-translate-y-2 overflow-hidden flex-shrink-0 w-[140px] md:w-auto h-24 md:h-auto flex flex-col justify-center">
                 <div className="absolute top-0 right-0 p-1 md:p-4 opacity-5 group-hover:opacity-20 transition-opacity">
-                  <span className="text-4xl md:text-8xl japanese-text">{stat.icon}</span>
+                  <span className="text-3xl md:text-8xl japanese-text">{stat.icon}</span>
                 </div>
                 <div className="relative z-10">
-                  <h3 className="text-lg md:text-4xl font-black italic mb-0.5 group-hover:text-rose-500 transition-colors">{stat.num}+</h3>
-                  <p className="text-[7px] md:text-[10px] font-black text-slate-500 uppercase tracking-widest leading-none">{stat.label}</p>
+                  <h3 className="text-base md:text-4xl font-black italic mb-0.5 group-hover:text-rose-500 transition-colors uppercase">{stat.num}+</h3>
+                  <p className="text-[7px] md:text-[10px] font-black text-slate-500 uppercase tracking-widest leading-none whitespace-normal md:whitespace-nowrap">{stat.label}</p>
                 </div>
               </div>
             ))}

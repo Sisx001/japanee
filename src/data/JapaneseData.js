@@ -3,6 +3,8 @@ import { MASSIVE_N5_VOCAB } from './MassiveN5Vocab';
 import { MASSIVE_N4_VOCAB } from './MassiveN4Vocab';
 import { MASSIVE_SENTENCES } from './MassiveSentences';
 
+export { MASSIVE_N5_VOCAB, MASSIVE_N4_VOCAB, MASSIVE_SENTENCES };
+
 // ==================== HIRAGANA ====================
 export const HIRAGANA = [
   // Basic vowels
@@ -1371,6 +1373,9 @@ export default {
   N2_GRAMMAR,
   N1_GRAMMAR,
   PRACTICE_SENTENCES,
+  MASSIVE_N5_VOCAB,
+  MASSIVE_N4_VOCAB,
+  MASSIVE_SENTENCES,
   RANDOM_NAMES,
   AVATAR_EMOJIS,
   LEVEL_TITLES,

@@ -45,12 +45,14 @@ const initialProgress = {
   lessonsCompleted: 0
 };
 
+const isMobileDevice = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+
 const initialSettings = {
   romajiMode: 'on',
   furiganaMode: true,
   difficulty: 'easy',
   backgroundMusic: true,
-  musicVolume: 0.05,
+  musicVolume: isMobileDevice ? 0.10 : 0.05,
   soundEffects: true,
   theme: 'light',
   dailyGoal: 15,
