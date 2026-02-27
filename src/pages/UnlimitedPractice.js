@@ -8,7 +8,7 @@ import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { Input } from '@/components/ui/input';
 import { Volume2, Check, X, ChevronRight, Zap, Target, Trophy, Flame, Clock } from 'lucide-react';
-import { HIRAGANA, KATAKANA, N5_VOCABULARY, N5_KANJI, N5_GRAMMAR } from '@/data/CompleteJapaneseContent';
+import { HIRAGANA, KATAKANA, N5_VOCABULARY, N5_KANJI, N5_GRAMMAR } from '@/data/JapaneseData';
 
 // Helper function for weighted random selection
 const weightedRandom = (items, weights) => {

@@ -11,7 +11,7 @@ import {
     Target, Sparkles, Trophy, Headphones, Zap,
     CheckCircle2, AlertCircle, RefreshCcw, Brain, Activity
 } from 'lucide-react';
-import { MASSIVE_SENTENCES } from '@/data/MassiveSentences';
+import { MASSIVE_SENTENCES } from '@/data/JapaneseData';
 import useSpeechRecognition from '@/hooks/useSpeechRecognition';
 import { TranslateHelper } from '@/components/ui/TranslateHelper.jsx';
 

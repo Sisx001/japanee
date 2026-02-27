@@ -12,7 +12,7 @@ import {
   ArrowLeft, ChevronRight, Check, X, Clock, Trophy,
   Target, AlertCircle, BookOpen, FileText, Volume2, Sparkles, Brain, Zap, ShieldAlert
 } from 'lucide-react';
-import { N5_VOCABULARY, N5_KANJI, N5_GRAMMAR, N4_KANJI } from '@/data/CompleteJapaneseContent';
+import { N5_VOCABULARY, N5_KANJI, N5_GRAMMAR, N4_KANJI } from '@/data/JapaneseData';
 
 const MockTest = () => {
   const [searchParams] = useSearchParams();

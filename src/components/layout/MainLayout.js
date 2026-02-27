@@ -9,7 +9,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { useAudio } from '@/context/AudioContext';
 import ZenCursor from '../ui/ZenCursor.jsx';
-import JapaneseBackground from '../ui/JapaneseBackground';
+import JapaneseBackground from '../ui/JapaneseBackground.jsx';
 
 export const MainLayout = ({ children }) => {
   const location = useLocation();
