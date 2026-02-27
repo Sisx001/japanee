@@ -190,7 +190,7 @@ const PlacementQuiz = () => {
     }
   };
 
-  const calculateRecommendedLevel = () => {
+  const calculateRecommendedLevel = useCallback(() => {
     const levels = ['beginner', 'elementary', 'intermediate', 'advanced'];
     let recommendedLevel = 'beginner';
 
@@ -205,7 +205,7 @@ const PlacementQuiz = () => {
     }
 
     return recommendedLevel;
-  };
+  }, [results]);
 
   const getRecommendedPath = () => {
     const level = calculateRecommendedLevel();
@@ -229,7 +229,7 @@ const PlacementQuiz = () => {
       const recommendedLevel = calculateRecommendedLevel();
       localStorage.setItem('nihongo_placement_result', JSON.stringify({ recommendedLevel, results }));
     }
-  }, [quizState]);
+  }, [quizState, calculateRecommendedLevel, results]);
 
   const levelLabels = {
     beginner: { en: 'Beginner', bn: 'শুরুকারী', emoji: '🌱' },

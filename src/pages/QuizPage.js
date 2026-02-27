@@ -7,10 +7,17 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
-import { 
+import {
   ChevronRight, Check, X, Volume2, RotateCcw, Trophy, ArrowLeft, Sparkles
 } from 'lucide-react';
 import { HIRAGANA, KATAKANA, N5_KANJI, N5_VOCABULARY, N5_GRAMMAR } from '@/data/JapaneseData';
+
+// Helper functions (moved outside to prevent re-renders)
+const shuffleArray = (arr) => [...arr].sort(() => Math.random() - 0.5);
+const getRandomItems = (arr, count) => {
+  const shuffled = shuffleArray(arr);
+  return shuffled.slice(0, Math.min(count, shuffled.length));
+};
 
 const QuizPage = () => {
   const { type } = useParams();
@@ -116,7 +123,7 @@ const QuizPage = () => {
     // Shuffle and select items
     const shuffled = shuffleArray([...sourceData]);
     const selected = shuffled.slice(0, Math.min(count, shuffled.length));
-    
+
     // Generate questions
     const generatedQuestions = selected.map(item => questionGenerator(item, sourceData));
     setQuestions(generatedQuestions);
@@ -126,26 +133,18 @@ const QuizPage = () => {
     generateQuestions();
   }, [generateQuestions]);
 
-  // Helper functions
-  const shuffleArray = (arr) => [...arr].sort(() => Math.random() - 0.5);
-  
-  const getRandomItems = (arr, count) => {
-    const shuffled = shuffleArray(arr);
-    return shuffled.slice(0, Math.min(count, shuffled.length));
-  };
-
   const currentQuestion = questions[currentIndex];
   const progressPercent = ((currentIndex + 1) / questions.length) * 100;
 
   const handleAnswer = (answer) => {
     if (showResult) return;
-    
+
     initializeAudio();
     setSelectedAnswer(answer);
     setShowResult(true);
-    
+
     const isCorrect = answer === currentQuestion.answer;
-    
+
     if (isCorrect) {
       setScore(prev => ({ ...prev, correct: prev.correct + 1 }));
       playSound('correct');
@@ -292,7 +291,7 @@ const QuizPage = () => {
                 {currentQuestion.options.map((option, idx) => {
                   const isSelected = selectedAnswer === option;
                   const isCorrect = option === currentQuestion.answer;
-                  
+
                   let buttonStyle = 'bg-background border-2 hover:border-rose-300';
                   if (showResult) {
                     if (isCorrect) buttonStyle = 'bg-green-100 dark:bg-green-900/30 border-green-500 text-green-700';

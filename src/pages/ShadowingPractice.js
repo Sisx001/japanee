@@ -45,21 +45,25 @@ const ShadowingPractice = () => {
         if (transcript && !isListening) {
             calculateMatch(transcript, currentSentence.jp);
         }
-    }, [transcript, isListening, currentSentence]);
+    }, [transcript, isListening, currentSentence, calculateMatch]);
 
-    const calculateMatch = (spoken, target) => {
+    const calculateMatch = useCallback((spoken, target) => {
         const s1 = spoken.replace(/[、。？！\s]/g, '');
         const s2 = target.replace(/[、।？！\s]/g, '');
         let matches = 0;
         const longer = s1.length > s2.length ? s1 : s2;
         const shorter = s1.length > s2.length ? s2 : s1;
-        if (longer.length === 0) return 0;
+        if (longer.length === 0) return;
+
         for (let i = 0; i < shorter.length; i++) {
             if (longer.includes(shorter[i])) matches++;
         }
         const score = Math.round((matches / longer.length) * 100);
+
+        setAccuracy(score);
         setMatchScore(score);
         setShowAnalysis(true);
+
         if (score > 80) {
             setFeedback(t('Excellent Pronunciation!', 'চমৎকার উচ্চারণ!'));
             playSound('correct');
@@ -76,7 +80,7 @@ const ShadowingPractice = () => {
         } else {
             setFeedback(t('Try again for better accuracy', 'আরও ভালো করার জন্য আবার চেষ্টা করুন'));
         }
-    };
+    }, [currentSentence.jp, playSound, showAnalysis, t, addExperience]);
 
     const handleListen = () => {
         initializeAudio();

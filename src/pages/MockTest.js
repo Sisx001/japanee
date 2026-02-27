@@ -89,7 +89,7 @@ const MockTest = () => {
       setLoading(false);
     };
     generateQuestions();
-  }, [level, difficulty]);
+  }, [level, difficulty, config.sections]);
 
   useEffect(() => {
     if (!timerActive || timeLeft <= 0 || rules.timerMultiplier === 0) return;
@@ -98,7 +98,7 @@ const MockTest = () => {
       return p - 1;
     }), 1000);
     return () => clearInterval(t);
-  }, [timerActive, timeLeft, rules.timerMultiplier]);
+  }, [timerActive, timeLeft, rules.timerMultiplier, handleTimeUp]);
 
   const startTest = () => { setPhase('test'); if (rules.timerMultiplier > 0) { setTimeLeft(Math.floor(config.baseTime * rules.timerMultiplier)); setTimerActive(true); } };
   const handleTimeUp = () => { setTimerActive(false); toast.error("TIME EXPIRED: SIMULATION ENDED."); calculateResults(); };

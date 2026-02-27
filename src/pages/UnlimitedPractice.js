@@ -84,12 +84,12 @@ const UnlimitedPractice = () => {
   };
 
   // Get current difficulty level
-  const getCurrentDifficulty = () => {
+  const getCurrentDifficulty = useCallback(() => {
     if (difficulty !== 'adaptive') return difficulty;
     if (adaptiveDifficulty <= 2) return 'easy';
     if (adaptiveDifficulty <= 3) return 'medium';
     return 'hard';
-  };
+  }, [difficulty, adaptiveDifficulty]);
 
   // Generate a random question based on difficulty
   const generateQuestion = useCallback(() => {
@@ -296,7 +296,7 @@ const UnlimitedPractice = () => {
     }
 
     return question;
-  }, [questionType]);
+  }, [questionType, getCurrentDifficulty]);
 
   // Load first question
   useEffect(() => {
