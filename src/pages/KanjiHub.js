@@ -74,7 +74,7 @@ const KanjiHub = () => {
           <Link to="/quiz/kanji" className="w-full md:w-auto">
             <Button className="h-12 md:h-14 w-full px-6 md:px-8 rounded-xl md:rounded-2xl bg-rose-600 hover:bg-rose-700 text-white font-black italic tracking-tight shadow-xl shadow-rose-500/10 group">
               <Play className="w-4 h-4 md:w-5 md:h-5 mr-2 md:mr-3 group-hover:scale-125 transition-transform" />
-              START ASSESSMENT
+              START TEST
             </Button>
           </Link>
         </div>

@@ -12,7 +12,7 @@ import {
   ArrowLeft, ChevronRight, Check, X, Clock, Trophy,
   Target, AlertCircle, BookOpen, FileText, Volume2, Sparkles, Brain, Zap, ShieldAlert
 } from 'lucide-react';
-import { N5_VOCABULARY, N5_KANJI, N5_GRAMMAR, N4_KANJI } from '@/data/JapaneseData';
+import { N5_VOCABULARY, N4_VOCABULARY, N5_KANJI, N4_KANJI, N5_GRAMMAR, N4_GRAMMAR } from '@/data/JapaneseData';
 
 const MockTest = () => {
   const [searchParams] = useSearchParams();
@@ -198,7 +198,7 @@ const MockTest = () => {
                 <h3 className="text-[8px] md:text-[10px] font-black uppercase tracking-[0.2em] md:tracking-[0.4em] text-rose-500 italic">Parameters</h3>
                 {[
                   { label: 'Time Limit', val: rules.timerMultiplier === 0 ? 'INF.' : Math.floor((config.baseTime * rules.timerMultiplier) / 60) + 'M' },
-                  { label: 'Neural Hints', val: rules.hintsAllowed === Infinity ? 'MAX' : rules.hintsAllowed },
+                  { label: 'Hints', val: rules.hintsAllowed === Infinity ? 'MAX' : rules.hintsAllowed },
                   { label: 'Sync Target', val: rules.passingThreshold + '%' }
                 ].map((p, i) => (
                   <div key={i} className="flex justify-between items-center">
@@ -220,7 +220,7 @@ const MockTest = () => {
 
           <div className="space-y-4 pt-4">
             <Button className="w-full h-16 md:h-24 rounded-2xl md:rounded-[2.5rem] bg-slate-900 dark:bg-white text-white dark:text-slate-900 border-0 text-lg md:text-2xl font-black italic tracking-tighter hover:scale-[1.02] transition-all shadow-2xl" onClick={startTest}>
-              INITIATE NEURAL LINK
+              START TEST
             </Button>
             <Link to="/practice" className="block text-center text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-rose-500 transition-colors uppercase italic">Abort Simulation</Link>
           </div>

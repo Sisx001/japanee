@@ -33,11 +33,11 @@ const LandingPage = () => {
   };
 
   const stats = [
-    { num: HIRAGANA.length + KATAKANA.length, label: 'Traditional Kana', icon: 'あ' },
-    { num: N5_KANJI.length + N4_KANJI.length, label: 'Kanji Hub', icon: '漢' },
-    { num: (N5_VOCABULARY?.length || 0) + (N4_VOCABULARY?.length || 0) + (MASSIVE_N5_VOCAB?.length || 0) + (MASSIVE_N4_VOCAB?.length || 0), label: 'Continue Learning', icon: '単' },
-    { num: N5_GRAMMAR.length + N4_GRAMMAR.length, label: 'Grammar Guide', icon: '文' },
-    { num: MASSIVE_SENTENCES.length, label: 'Reading Practice', icon: '話' }
+    { num: "142", label: 'Traditional Kana', icon: 'あ' },
+    { num: "398", label: 'Kanji Hub', icon: '漢' },
+    { num: "5664", label: 'Continue Learning', icon: '単' },
+    { num: "185", label: 'Grammar Guide', icon: '文' },
+    { num: "1410", label: 'Reading Practice', icon: '話' }
   ];
 
   return (

@@ -109,7 +109,7 @@ const ReadingPractice = () => {
         <div className="space-y-3">
           <div className="flex justify-between items-end px-2">
             <span className="text-[10px] font-black uppercase tracking-widest text-rose-500 italic">
-              {showQuiz ? 'NEURAL COMPREHENSION TEST' : 'UPLINKING LINGUISTIC DATA'}
+              {showQuiz ? 'COMPREHENSION TEST' : 'LOADING LESSON DATA'}
             </span>
             <span className="text-xs font-black italic text-slate-400">
               {showQuiz ? `NODE ${currentQuestionIndex + 1}/${currentPassage.questions?.length}` : `SEGMENT ${currentParagraphIndex + 1}/${totalParagraphs}`}
@@ -160,7 +160,7 @@ const ReadingPractice = () => {
                     <ChevronLeft className="mr-2 w-5 h-5 md:w-6 md:h-6" /> PREVIOUS
                   </Button>
                   <Button onClick={nextParagraph} className="flex-1 h-14 md:h-20 rounded-xl md:rounded-[2rem] bg-slate-900 dark:bg-white text-white dark:text-slate-900 font-black uppercase tracking-[0.1em] md:tracking-[0.2em] italic shadow-2xl hover:scale-105 transition-all text-[10px] md:text-base">
-                    {currentParagraphIndex === totalParagraphs - 1 ? 'INITIATE QUIZ' : 'NEXT SEGMENT'} <ChevronRight className="ml-2 w-5 h-5 md:w-6 md:h-6" />
+                    {currentParagraphIndex === totalParagraphs - 1 ? 'START QUIZ' : 'NEXT SEGMENT'} <ChevronRight className="ml-2 w-5 h-5 md:w-6 md:h-6" />
                   </Button>
                 </div>
               </CardContent>
@@ -172,7 +172,7 @@ const ReadingPractice = () => {
             <Card className="glass rounded-[3.5rem] border-0 overflow-hidden relative">
               <div className="absolute inset-0 opacity-[0.03] pointer-events-none" style={{ backgroundImage: asanohaPattern }} />
               <CardHeader className="p-12 text-center pb-0">
-                <h2 className="text-xl font-black uppercase tracking-[0.3em] text-rose-500 italic mb-4">Neural Logic Verify</h2>
+                <h2 className="text-xl font-black uppercase tracking-[0.3em] text-rose-500 italic mb-4">Logic Verification</h2>
                 <p className="text-3xl font-black japanese-text text-slate-900 dark:text-white mb-4 leading-tight">{currentQuestion?.q_jp}</p>
                 <p className="text-sm font-black text-slate-400 italic uppercase tracking-widest">"{language === 'bn' ? currentQuestion?.q_bn : currentQuestion?.q_en}"</p>
               </CardHeader>
@@ -207,7 +207,7 @@ const ReadingPractice = () => {
                 <div className="flex flex-col gap-4">
                   {showResult && (
                     <Button className="w-full h-20 md:h-24 rounded-[1.5rem] md:rounded-[2.5rem] bg-rose-500 text-white text-xl md:text-2xl font-black italic tracking-tighter shadow-2xl shadow-rose-500/20 hover:scale-105 transition-all" onClick={nextQuestion}>
-                      {currentQuestionIndex < (currentPassage.questions?.length || 0) - 1 ? 'NEXT LOGIC NODE' : 'STREAM COMPLETE'} <ChevronRight className="ml-2 w-5 h-5 md:w-7 md:h-7" />
+                      {currentQuestionIndex < (currentPassage.questions?.length || 0) - 1 ? 'NEXT QUESTION' : 'LESSON COMPLETE'} <ChevronRight className="ml-2 w-5 h-5 md:w-7 md:h-7" />
                     </Button>
                   )}
                   <Button variant="ghost" onClick={() => setShowQuiz(false)} className="h-16 rounded-2xl font-black uppercase tracking-widest text-slate-400 hover:text-rose-500 italic">Review Stream History</Button>
