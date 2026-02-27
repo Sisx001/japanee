@@ -107,7 +107,7 @@ const ShadowingPractice = () => {
     };
 
     if (!hasSupport) return <MainLayout><div className="flex flex-col items-center justify-center h-[50vh] space-y-4"><AlertCircle className="w-16 h-16 text-rose-500" /><h1 className="text-2xl font-black">{t('SPEECH API NOT DETECTED', 'স্পিচ এপিআই সনাক্ত করা যায়নি')}</h1></div></MainLayout>;
-    if (!currentSentence) return <MainLayout><div className="flex h-[50vh] items-center justify-center"><Brain className="animate-spin w-12 h-12 text-rose-500" /></div></MainLayout>;
+    if (!currentSentence || !MASSIVE_SENTENCES || MASSIVE_SENTENCES.length === 0) return <MainLayout><div className="flex h-[50vh] items-center justify-center"><Brain className="animate-spin w-12 h-12 text-rose-500" /></div></MainLayout>;
 
     return (
         <MainLayout>
