@@ -58,8 +58,9 @@ const LandingPage = () => {
           </div>
 
           <div className="relative inline-block mb-10 md:mb-12 group px-4">
-            <h1 className="text-[10vw] sm:text-7xl md:text-8xl lg:text-[10rem] font-black tracking-tighter leading-[0.9] md:leading-[0.8] mb-4 whitespace-nowrap">
-              NIHONGO <span className="text-rose-500 italic">ZEN</span> <span className="text-slate-900 dark:text-white">ACADEMY</span>
+            <h1 className="text-4xl sm:text-7xl md:text-8xl lg:text-[10rem] font-black tracking-tighter leading-[0.9] md:leading-[0.8] mb-4">
+              <span className="text-indigo-900 dark:text-indigo-200">NIHONGO</span><br />
+              <span className="text-rose-500 italic">ZEN</span> <span className="text-rose-500">ACADEMY</span>
             </h1>
             <div className="absolute -right-12 top-0 vertical-text hidden lg:block opacity-40">
               <span className="text-2xl font-black japanese-text tracking-widest text-rose-500">学習システム</span>

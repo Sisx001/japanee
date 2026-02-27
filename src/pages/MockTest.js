@@ -76,12 +76,41 @@ const MockTest = () => {
           difficulty === 'hard' ? Math.floor(section.questions * 1.3) : section.questions;
 
         if (section.type === 'vocab') {
-          qs = shuffle(N5_VOCABULARY).slice(0, count).map(v => ({ id: v.id, prompt: v.kanji || v.kana, sub: v.romaji, ans: v.en, type: 'vocab', options: generateOptions(v.en, N5_VOCABULARY.map(x => x.en)), audio: v.kana, hint: v.kana }));
+          const vData = level === 'N5' ? N5_VOCABULARY : [...N5_VOCABULARY, ...N4_VOCABULARY];
+          qs = shuffle(vData).slice(0, count).map(v => ({
+            id: v.id || v.word,
+            prompt: v.word || v.kanji || v.kana,
+            sub: v.reading || v.romaji,
+            ans: v.meaning || v.en,
+            type: 'vocab',
+            options: generateOptions(v.meaning || v.en, vData.map(x => x.meaning || x.en)),
+            audio: v.reading || v.kana,
+            hint: v.reading || v.kana
+          }));
         } else if (section.type === 'kanji') {
           const kData = level === 'N5' ? N5_KANJI : [...N5_KANJI, ...N4_KANJI];
-          qs = shuffle(kData).slice(0, count).map(k => ({ id: k.char, prompt: k.char, sub: null, ans: k.en, type: 'kanji', options: generateOptions(k.en, kData.map(x => x.en)), audio: k.char, hint: k.on?.[0] || k.kun?.[0] }));
+          qs = shuffle(kData).slice(0, count).map(k => ({
+            id: k.char || k.kanji,
+            prompt: k.char || k.kanji,
+            sub: null,
+            ans: k.en || k.meaning,
+            type: 'kanji',
+            options: generateOptions(k.en || k.meaning, kData.map(x => x.en || x.meaning)),
+            audio: k.char || k.kanji,
+            hint: k.onyomi || k.on?.[0] || k.kunyomi || k.kun?.[0]
+          }));
         } else if (section.type === 'grammar') {
-          qs = shuffle(N5_GRAMMAR).slice(0, count).map(g => ({ id: g.id, prompt: g.pattern, sub: g.examples[0]?.jp, ans: g.meaning, type: 'grammar', options: generateOptions(g.meaning, N5_GRAMMAR.map(x => x.meaning)), audio: g.pattern, hint: g.explanation?.substring(0, 30) + "..." }));
+          const gData = level === 'N5' ? N5_GRAMMAR : (level === 'N4' ? [...N5_GRAMMAR, ...N4_GRAMMAR] : N5_GRAMMAR);
+          qs = shuffle(gData).slice(0, count).map(g => ({
+            id: g.id || g.pattern,
+            prompt: g.pattern,
+            sub: g.examples?.[0]?.jp,
+            ans: g.meaning,
+            type: 'grammar',
+            options: generateOptions(g.meaning, gData.map(x => x.meaning)),
+            audio: g.pattern,
+            hint: g.explanation?.substring(0, 30) + "..."
+          }));
         }
         data.push({ ...section, questions: qs });
       }
@@ -89,7 +118,7 @@ const MockTest = () => {
       setLoading(false);
     };
     generateQuestions();
-  }, [level, difficulty, config.sections]);
+  }, [level, difficulty, config, N5_VOCABULARY, N4_VOCABULARY, N5_KANJI, N4_KANJI, N5_GRAMMAR]);
 
   useEffect(() => {
     if (!timerActive || timeLeft <= 0 || rules?.timerMultiplier === 0) return;
@@ -103,7 +132,7 @@ const MockTest = () => {
       return p - 1;
     }), 1000);
     return () => clearInterval(t);
-  }, [timerActive, timeLeft, rules?.timerMultiplier, calculateResults]);
+  }, [timerActive, timeLeft, rules?.timerMultiplier, calculateResults, config?.baseTime]);
 
   const calculateResults = useCallback(() => {
     setTimerActive(false);
@@ -299,7 +328,7 @@ const MockTest = () => {
                   className="bg-amber-100 dark:bg-amber-900/40 text-amber-600 dark:text-amber-400 font-black text-xs tracking-widest uppercase border border-amber-500/30 hover:bg-amber-500/20 rounded-full h-12 px-8 shadow-xl backdrop-blur-md"
                   onClick={() => { if (hintsUsed < rules.hintsAllowed) { setHintsUsed(p => p + 1); setShowHint(true); } }}
                 >
-                  <Zap className="w-4 h-4 mr-2" /> NEURAL HINT [{hintsUsed}/{rules.hintsAllowed}]
+                  <Zap className="w-4 h-4 mr-2" /> NEURAL HINT [{hintsUsed}/{rules.hintsAllowed === Infinity ? '∞' : rules.hintsAllowed}]
                 </Button>
               </div>
             )}

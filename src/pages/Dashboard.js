@@ -53,6 +53,7 @@ const Dashboard = () => {
     { icon: '単', title: 'Vocabulary', subtitle: `${progress.vocabLearned?.length || 0} words`, path: '/vocab', color: 'bg-green-500 shadow-green-500/20' },
     { icon: '🎙️', title: 'Shadowing', subtitle: 'Voice Practice', path: '/practice/shadowing', color: 'bg-orange-500 shadow-orange-500/20' },
     { icon: '📚', title: 'Library', subtitle: 'Ebook Hub', path: '/ebooks', color: 'bg-indigo-500 shadow-indigo-500/20' },
+    { icon: '📄', title: 'PDF Reader', subtitle: 'Study Guides', path: '/ebooks', color: 'bg-rose-600 shadow-rose-500/20' },
   ];
 
 

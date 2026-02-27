@@ -47,6 +47,7 @@ const ListeningHub = () => {
     }, [filteredSentences]);
 
     const loadNext = useCallback(() => {
+        if (!filteredSentences.length) return;
         const sentence = filteredSentences[Math.floor(Math.random() * filteredSentences.length)];
         setCurrentSentence(sentence);
         setOptions(generateOptions(sentence));
@@ -67,7 +68,7 @@ const ListeningHub = () => {
     };
 
     const checkAnswer = (selectedId) => {
-        if (showResult) return;
+        if (showResult || !currentSentence) return;
 
         const correct = selectedId === currentSentence.id;
         setIsCorrect(correct);
@@ -89,7 +90,7 @@ const ListeningHub = () => {
     };
 
     const handleDictationCheck = () => {
-        if (showResult || !userInput.trim()) return;
+        if (showResult || !userInput.trim() || !currentSentence) return;
 
         const input = userInput.trim().toLowerCase();
         const correct = input === currentSentence.jp ||

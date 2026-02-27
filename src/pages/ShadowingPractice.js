@@ -43,7 +43,7 @@ const ShadowingPractice = () => {
     } = useSpeechRecognition({ lang: 'ja-JP' });
 
     useEffect(() => {
-        if (transcript && !isListening) {
+        if (transcript && !isListening && currentSentence) {
             calculateMatch(transcript, currentSentence.jp);
         }
     }, [transcript, isListening, currentSentence, calculateMatch]);
@@ -84,6 +84,7 @@ const ShadowingPractice = () => {
     }, [currentSentence.jp, playSound, showAnalysis, t, addExperience]);
 
     const handleListen = () => {
+        if (!currentSentence) return;
         initializeAudio();
         speak(currentSentence.jp, { rate: 0.8 });
     };
