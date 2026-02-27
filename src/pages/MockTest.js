@@ -151,7 +151,7 @@ const MockTest = () => {
   const questionsDone = sections.slice(0, currentSectionIndex).reduce((sum, s) => sum + s.questions.length, 0) + currentQuestionIndex + 1;
   const progress = (questionsDone / totalQuestions) * 100;
 
-  if (loading) return <MainLayout><div className="flex h-[50vh] items-center justify-center"><Brain className="animate-spin w-12 h-12 text-rose-500" /></div></MainLayout>;
+  if (loading || !config || !currentSection || !currentQuestion) return <MainLayout><div className="flex h-[50vh] items-center justify-center"><Brain className="animate-spin w-12 h-12 text-rose-500" /></div></MainLayout>;
 
   if (phase === 'intro') {
     return (
