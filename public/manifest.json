@@ -1,0 +1,28 @@
+{
+  "name": "Nihongo Play",
+  "short_name": "Nihongo Play",
+  "description": "Learn Japanese from zero to JLPT N4 with fun, gamified lessons - no account needed!",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#fef7f7",
+  "theme_color": "#f43f5e",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["education", "lifestyle"],
+  "lang": "en",
+  "scope": "/",
+  "prefer_related_applications": false
+}
