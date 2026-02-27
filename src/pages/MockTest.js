@@ -47,7 +47,7 @@ const MockTest = () => {
     hard: { timerMultiplier: 0.7, hintsAllowed: 0, passingThreshold: 85, xpMultiplier: 1.5, label: 'ELITE' }
   };
 
-  const rules = DIFFICULTY_RULES[difficulty];
+  const rules = DIFFICULTY_RULES[difficulty] || DIFFICULTY_RULES.easy;
 
   const TEST_CONFIG = {
     N5: { name: 'JLPT N5 COLLECTIVE EXAM', name_bn: 'JLPT N5 কালেক্টিভ এক্সাম', baseTime: 25 * 60, sections: [{ type: 'vocab', name: 'VOCABULARY', questions: 10 }, { type: 'kanji', name: 'KANJI HUB', questions: 8 }, { type: 'grammar', name: 'GRAMMAR', questions: 7 }] },

@@ -270,7 +270,7 @@ const ShadowingPractice = () => {
                             <div className="space-y-4">
                                 <div className="flex justify-between items-end">
                                     <span className="text-[10px] font-black uppercase text-slate-500">Sync Efficiency</span>
-                                    <span className="text-2xl font-black italic color-indigo-500">{sessionStats.total > 0 ? Math.round((sessionStats.mastered / sessionStats.total) * 100) : 0}%</span>
+                                    <span className="text-2xl font-black italic text-indigo-500">{sessionStats.total > 0 ? Math.round((sessionStats.mastered / sessionStats.total) * 100) : 0}%</span>
                                 </div>
                                 <div className="h-3 glass rounded-full overflow-hidden p-0.5"><div className="h-full bg-indigo-500 rounded-full transition-all duration-1000 shadow-[0_0_10px_rgba(99,102,241,0.5)]" style={{ width: `${sessionStats.total > 0 ? (sessionStats.mastered / sessionStats.total) * 100 : 0}%` }} /></div>
                             </div>

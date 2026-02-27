@@ -12,7 +12,7 @@ import { Slider } from '@/components/ui/slider';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
   Volume2, VolumeX, Sun, Moon, Target, Music, Sparkles, Languages,
-  User, Settings, Trophy, Check, Edit2, ShieldAlert,
+  User, Settings, Trophy, Check, Edit2, ShieldAlert, Globe,
   Zap, Flame, Star, Activity, Crown, History
 } from 'lucide-react';
 import { AVATAR_EMOJIS, BADGES, LEVEL_TITLES, N5_KANJI, N4_KANJI, N5_VOCABULARY, N4_VOCABULARY } from '@/data/JapaneseData';
