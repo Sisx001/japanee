@@ -97,17 +97,17 @@ const LandingPage = () => {
       </section>
 
       {/* Grid Stats Section */}
-      <section className="py-32 px-6">
+      <section className="py-12 md:py-32 px-4 shadow-inner bg-slate-50/50 dark:bg-white/5">
         <div className="container mx-auto max-w-6xl">
-          <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
+          <div className="flex md:grid md:grid-cols-5 gap-2 md:gap-4 overflow-x-auto pb-4 md:pb-0 no-scrollbar">
             {stats.map((stat, idx) => (
-              <div key={idx} className="group relative bg-white/40 dark:bg-slate-900/40 backdrop-blur-3xl border border-rose-500/10 p-8 rounded-[3rem] hover:border-rose-500/50 transition-all duration-500 hover:-translate-y-2 overflow-hidden">
-                <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-20 transition-opacity">
-                  <span className="text-8xl japanese-text">{stat.icon}</span>
+              <div key={idx} className="group relative bg-white/40 dark:bg-slate-900/40 backdrop-blur-3xl border border-rose-500/10 p-3 md:p-8 rounded-2xl md:rounded-[3rem] hover:border-rose-500/50 transition-all duration-500 hover:-translate-y-2 overflow-hidden flex-shrink-0 w-[100px] md:w-auto h-24 md:h-auto flex flex-col justify-center">
+                <div className="absolute top-0 right-0 p-1 md:p-4 opacity-5 group-hover:opacity-20 transition-opacity">
+                  <span className="text-4xl md:text-8xl japanese-text">{stat.icon}</span>
                 </div>
                 <div className="relative z-10">
-                  <h3 className="text-4xl font-black italic mb-1 group-hover:text-rose-500 transition-colors">{stat.num}+</h3>
-                  <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest">{stat.label}</p>
+                  <h3 className="text-lg md:text-4xl font-black italic mb-0.5 group-hover:text-rose-500 transition-colors">{stat.num}+</h3>
+                  <p className="text-[7px] md:text-[10px] font-black text-slate-500 uppercase tracking-widest leading-none">{stat.label}</p>
                 </div>
               </div>
             ))}

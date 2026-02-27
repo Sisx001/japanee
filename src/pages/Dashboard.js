@@ -52,6 +52,7 @@ const Dashboard = () => {
     { icon: '漢', title: 'Kanji', subtitle: `${progress.kanjiLearned?.length || 0}/${totalKanji}`, path: '/kanji', color: 'bg-purple-500 shadow-purple-500/20' },
     { icon: '単', title: 'Vocabulary', subtitle: `${progress.vocabLearned?.length || 0} words`, path: '/vocab', color: 'bg-green-500 shadow-green-500/20' },
     { icon: '🎙️', title: 'Shadowing', subtitle: 'Voice Practice', path: '/practice/shadowing', color: 'bg-orange-500 shadow-orange-500/20' },
+    { icon: '📚', title: 'Library', subtitle: 'Ebook Hub', path: '/library', color: 'bg-indigo-500 shadow-indigo-500/20' },
   ];
 
 

@@ -92,13 +92,18 @@ const MockTest = () => {
   }, [level, difficulty, config.sections]);
 
   useEffect(() => {
-    if (!timerActive || timeLeft <= 0 || rules.timerMultiplier === 0) return;
+    if (!timerActive || timeLeft <= 0 || rules?.timerMultiplier === 0) return;
     const t = setInterval(() => setTimeLeft(p => {
-      if (p <= 1) { handleTimeUp(); return 0; }
+      if (p <= 1) {
+        setTimerActive(false);
+        toast.error("TIME EXPIRED: SIMULATION ENDED.");
+        calculateResults();
+        return 0;
+      }
       return p - 1;
     }), 1000);
     return () => clearInterval(t);
-  }, [timerActive, timeLeft, rules.timerMultiplier, handleTimeUp]);
+  }, [timerActive, timeLeft, rules?.timerMultiplier, calculateResults]);
 
   const calculateResults = useCallback(() => {
     setTimerActive(false);
@@ -111,15 +116,11 @@ const MockTest = () => {
     setPhase('results');
   }, [sections, answers, rules, addXP, playSound]);
 
-  const handleTimeUp = useCallback(() => {
-    setTimerActive(false);
-    toast.error("TIME EXPIRED: SIMULATION ENDED.");
-    calculateResults();
-  }, [calculateResults]);
+
 
   const startTest = () => {
     setPhase('test');
-    if (rules.timerMultiplier > 0) {
+    if (rules?.timerMultiplier > 0 && config?.baseTime) {
       setTimeLeft(Math.floor(config.baseTime * rules.timerMultiplier));
       setTimerActive(true);
     }

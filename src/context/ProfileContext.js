@@ -283,6 +283,8 @@ export const ProfileProvider = ({ children }) => {
     setSettings(prev => ({ ...prev, languagePreference: lang }));
   }, []);
 
+  const addExperience = addXP; // Alias for compatibility
+
   // Reset progress (for testing)
   const resetProgress = useCallback(() => {
     setProgress(initialProgress);
@@ -311,6 +313,7 @@ export const ProfileProvider = ({ children }) => {
     updateSettings,
     toggleTheme,
     setLanguagePreference,
+    addExperience,
 
     // Loading state
     isLoaded

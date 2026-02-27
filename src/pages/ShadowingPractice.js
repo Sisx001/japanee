@@ -115,7 +115,7 @@ const ShadowingPractice = () => {
                 {/* Cinematic Header */}
                 <div className="flex flex-col md:flex-row items-center justify-between gap-6 md:gap-8">
                     <div className="text-center md:text-left space-y-1 md:space-y-2">
-                        <badge className="bg-rose-500/10 text-rose-500 border-rose-500/20 px-3 py-1 rounded-full text-[8px] md:text-[10px] font-black tracking-[0.2em] md:tracking-[0.3em] uppercase italic">Vocal Sync Protocol</badge>
+                        <Badge className="bg-rose-500/10 text-rose-500 border-rose-500/20 px-3 py-1 rounded-full text-[8px] md:text-[10px] font-black tracking-[0.2em] md:tracking-[0.3em] uppercase italic">Vocal Sync Protocol</Badge>
                         <h1 className="text-3xl md:text-6xl font-black italic tracking-tighter uppercase flex items-center justify-center md:justify-start gap-3 md:gap-4">
                             <Headphones className="w-8 h-8 md:w-12 md:h-12 text-rose-500 animate-pulse" />
                             {t('Neural Shadow', 'নিউরাল শ্যাডো')}

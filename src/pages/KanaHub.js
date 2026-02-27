@@ -73,22 +73,22 @@ const KanaHub = () => {
     <MainLayout>
       <div className="space-y-10 animate-in fade-in slide-in-from-bottom-8 duration-1000 max-w-5xl mx-auto">
         {/* Futuristic Header */}
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 bg-white/40 dark:bg-slate-900/40 backdrop-blur-3xl p-8 rounded-[2.5rem] border border-rose-500/10 shadow-2xl">
-          <div className="flex items-center gap-5">
-            <div className="w-16 h-16 bg-rose-500 rounded-3xl flex items-center justify-center shadow-lg shadow-rose-500/20 rotate-3 hover:rotate-0 transition-transform">
-              <Brain className="w-8 h-8 text-white" />
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 md:gap-6 bg-white/40 dark:bg-slate-900/40 backdrop-blur-3xl p-4 md:p-8 rounded-[2rem] md:rounded-[2.5rem] border border-rose-500/10 shadow-2xl">
+          <div className="flex items-center gap-3 md:gap-5">
+            <div className="w-12 h-12 md:w-16 md:h-16 bg-rose-500 rounded-2xl md:rounded-3xl flex items-center justify-center shadow-lg shadow-rose-500/20 rotate-2 md:rotate-3 hover:rotate-0 transition-transform">
+              <Brain className="w-6 h-6 md:w-8 md:h-8 text-white" />
             </div>
             <div>
-              <h1 className="text-4xl font-black italic tracking-tighter text-slate-900 dark:text-white">KANA HUB</h1>
-              <div className="flex items-center gap-2 mt-1">
-                <span className="text-[10px] font-black text-rose-500 tracking-[0.3em] uppercase">Neural Registry Active</span>
-                <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+              <h1 className="text-xl md:text-4xl font-black italic tracking-tighter text-slate-900 dark:text-white uppercase">KANA HUB</h1>
+              <div className="flex items-center gap-2 mt-0.5 md:mt-1">
+                <span className="text-[8px] md:text-[10px] font-black text-rose-500 tracking-[0.2em] md:tracking-[0.3em] uppercase">Neural Registry</span>
+                <div className="w-1.5 h-1.5 md:w-2 md:h-2 rounded-full bg-green-500 animate-pulse" />
               </div>
             </div>
           </div>
-          <Link to="/practice/writing">
-            <Button className="h-14 px-8 rounded-2xl bg-rose-500 hover:bg-rose-600 text-white font-black italic tracking-tight shadow-xl shadow-rose-500/10 group">
-              <Pen className="w-5 h-5 mr-3 group-hover:rotate-12 transition-transform" />
+          <Link to="/practice/writing" className="w-full md:w-auto">
+            <Button className="h-12 md:h-14 w-full px-6 md:px-8 rounded-xl md:rounded-2xl bg-rose-500 hover:bg-rose-600 text-white font-black italic tracking-tight shadow-xl shadow-rose-500/10 group">
+              <Pen className="w-4 h-4 md:w-5 md:h-5 mr-2 md:mr-3 group-hover:rotate-12 transition-transform" />
               NEURAL WRITING
             </Button>
           </Link>

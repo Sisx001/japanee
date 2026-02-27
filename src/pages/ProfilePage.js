@@ -305,7 +305,7 @@ const SettingsPage = () => {
                       <button
                         key={lang.id}
                         onClick={() => setLanguagePreference(lang.id)}
-                        className={`h-12 rounded-xl font-black uppercase text-[10px] tracking-widest transition-all ${settings.languagePreference === lang.id ? 'bg-indigo-500 text-white shadow-lg' : 'glass hover:bg-white/10'}`}
+                        className={`h-12 rounded-xl font-black uppercase text-[10px] tracking-widest transition-all ${settings?.languagePreference === lang.id ? 'bg-indigo-500 text-white shadow-lg' : 'glass hover:bg-white/10'}`}
                       >
                         {lang.label}
                       </button>
@@ -328,7 +328,7 @@ const SettingsPage = () => {
                       <button
                         key={diff.id}
                         onClick={() => updateSettings({ difficulty: diff.id })}
-                        className={`h-12 rounded-xl font-black uppercase text-[10px] tracking-widest transition-all ${settings.difficulty === diff.id ? 'bg-rose-500 text-white shadow-lg' : 'glass hover:bg-white/10'}`}
+                        className={`h-12 rounded-xl font-black uppercase text-[10px] tracking-widest transition-all ${settings?.difficulty === diff.id ? 'bg-rose-500 text-white shadow-lg' : 'glass hover:bg-white/10'}`}
                       >
                         {diff.label}
                       </button>
