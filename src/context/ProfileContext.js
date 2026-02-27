@@ -16,10 +16,14 @@ const generateRandomProfile = () => {
   const randomName = RANDOM_NAMES[Math.floor(Math.random() * RANDOM_NAMES.length)];
   const randomAvatar = AVATAR_EMOJIS[Math.floor(Math.random() * AVATAR_EMOJIS.length)];
 
+  const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+  const defaultVolume = isMobile ? 0.10 : 0.05;
+
   return {
     name: randomName,
     avatar: randomAvatar,
-    createdAt: new Date().toISOString()
+    createdAt: new Date().toISOString(),
+    defaultVolume // Store for first-time setup
   };
 };
 
@@ -42,16 +46,16 @@ const initialProgress = {
 };
 
 const initialSettings = {
-  romajiMode: 'on', // on, off, auto-hide
+  romajiMode: 'on',
   furiganaMode: true,
-  difficulty: 'easy', // easy, medium, hard
+  difficulty: 'easy',
   backgroundMusic: true,
-  musicVolume: 0.05, // 5% volume
+  musicVolume: 0.05,
   soundEffects: true,
   theme: 'light',
   dailyGoal: 15,
   languagePreference: 'en',
-  cursorType: 'traditional' // 'traditional', 'ink_brush', 'sakura'
+  cursorType: 'traditional'
 };
 
 export const ProfileProvider = ({ children }) => {

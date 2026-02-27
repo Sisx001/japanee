@@ -136,8 +136,8 @@ const Dashboard = () => {
             </div>
             <CardContent className="p-6 md:p-8">
               <div className="flex items-center gap-3 md:gap-4 mb-3 md:mb-4">
-                <div className="w-10 h-10 md:w-12 md:h-12 bg-orange-500/20 rounded-xl md:rounded-2xl flex items-center justify-center shadow-inner">
-                  <Flame className="w-5 h-5 md:w-6 md:h-6 text-orange-500" />
+                <div className="w-10 h-10 md:w-16 md:h-16 bg-orange-500/20 rounded-xl md:rounded-2xl flex items-center justify-center shadow-inner">
+                  <Flame className="w-5 h-5 md:w-8 md:h-8 text-orange-500" />
                 </div>
                 <div>
                   <h3 className="text-[8px] md:text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] md:tracking-[0.3em] italic leading-tight">Flame Streak</h3>

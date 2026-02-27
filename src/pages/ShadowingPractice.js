@@ -16,14 +16,15 @@ import useSpeechRecognition from '@/hooks/useSpeechRecognition';
 import { TranslateHelper } from '@/components/ui/TranslateHelper';
 
 const ShadowingPractice = () => {
-    const { profile, addExperience } = useProfile();
+    const { profile, settings, addExperience } = useProfile();
     const { speak, playSound, initializeAudio, isPlaying } = useAudio();
-    const language = profile?.preferredLanguage || 'en';
+    const language = settings?.languagePreference || 'en';
     const t = (en, bn) => language === 'bn' ? bn : en;
 
     const [currentIndex, setCurrentIndex] = useState(0);
     const [showAnalysis, setShowAnalysis] = useState(false);
     const [matchScore, setMatchScore] = useState(0);
+    const [accuracy, setAccuracy] = useState(0);
     const [feedback, setFeedback] = useState('');
     const [sessionStats, setSessionStats] = useState({ mastered: 0, total: 0, xp: 0 });
 

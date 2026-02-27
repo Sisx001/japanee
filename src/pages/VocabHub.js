@@ -22,7 +22,7 @@ const VocabHub = () => {
   const [selectedLevel, setSelectedLevel] = useState('N5');
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [selectedWord, setSelectedWord] = useState(null);
-  const [displayCount, setDisplayCount] = useState(50);
+  const [displayCount, setDisplayCount] = useState(100);
 
   const currentVocab = useMemo(() => {
     return selectedLevel === 'N5' ? N5_VOCABULARY : N4_VOCABULARY;
@@ -223,13 +223,13 @@ const VocabHub = () => {
           })}
 
           {filteredVocab.length > displayCount && (
-            <div className="flex justify-center py-6">
+            <div className="flex justify-center py-10 pb-32">
               <Button
                 variant="outline"
-                className="rounded-full"
-                onClick={() => setDisplayCount(prev => prev + 100)}
+                className="rounded-full h-14 px-10 border-emerald-500/20 text-emerald-500 font-black italic tracking-widest hover:bg-emerald-500/10"
+                onClick={() => setDisplayCount(prev => prev + 200)}
               >
-                Load More Words ({filteredVocab.length - displayCount} remaining)
+                LOAD MORE UNITS ({filteredVocab.length - displayCount} REMAINING)
               </Button>
             </div>
           )}

@@ -52,13 +52,13 @@ const LandingPage = () => {
 
         <div className="container mx-auto relative z-10 text-center">
           {/* Status Badge */}
-          <div className="inline-flex items-center gap-3 px-6 py-2 rounded-full border border-rose-500/20 bg-rose-500/5 backdrop-blur-xl mb-8 animate-in fade-in slide-in-from-top-4 duration-1000">
-            <div className="w-2 h-2 rounded-full bg-rose-500 animate-pulse" />
-            <span className="text-[10px] font-black uppercase tracking-[0.4em] text-rose-500 italic">Nihongo Zen // Beautiful Japanese Learning</span>
+          <div className="inline-flex items-center gap-2 md:gap-3 px-4 md:px-6 py-1.5 md:py-2 rounded-full border border-rose-500/20 bg-rose-500/5 backdrop-blur-xl mb-6 md:mb-8 animate-in fade-in slide-in-from-top-4 duration-1000">
+            <div className="w-1.5 h-1.5 md:w-2 md:h-2 rounded-full bg-rose-500 animate-pulse" />
+            <span className="text-[8px] md:text-[10px] font-black uppercase tracking-[0.2em] md:tracking-[0.4em] text-rose-500 italic">Nihongo Zen // Beautiful Japanese Learning</span>
           </div>
 
           <div className="relative inline-block mb-10 md:mb-12 group px-4">
-            <h1 className="text-5xl sm:text-7xl md:text-8xl lg:text-[10rem] font-black tracking-tighter leading-[0.85] md:leading-[0.8] mb-4">
+            <h1 className="text-4xl sm:text-7xl md:text-8xl lg:text-[10rem] font-black tracking-tighter leading-[0.9] md:leading-[0.8] mb-4">
               NIHONGO<br />
               <span className="text-rose-500 italic">ZEN</span> <span className="text-slate-900 dark:text-white">ACADEMY</span>
             </h1>

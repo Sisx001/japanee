@@ -100,8 +100,30 @@ const MockTest = () => {
     return () => clearInterval(t);
   }, [timerActive, timeLeft, rules.timerMultiplier, handleTimeUp]);
 
-  const startTest = () => { setPhase('test'); if (rules.timerMultiplier > 0) { setTimeLeft(Math.floor(config.baseTime * rules.timerMultiplier)); setTimerActive(true); } };
-  const handleTimeUp = () => { setTimerActive(false); toast.error("TIME EXPIRED: SIMULATION ENDED."); calculateResults(); };
+  const calculateResults = useCallback(() => {
+    setTimerActive(false);
+    let correctCount = 0;
+    sections.forEach((s, sI) => { s.questions.forEach((_, qI) => { if (answers[`${sI}-${qI}`]?.correct) correctCount++; }); });
+    const totalQs = sections.reduce((sum, s) => sum + s.questions.length, 0);
+    const passed = Math.round((correctCount / totalQs) * 100) >= rules.passingThreshold;
+    addXP(Math.floor(correctCount * 10 * rules.xpMultiplier + (passed ? 50 : 0)));
+    playSound(passed ? 'levelup' : 'wrong');
+    setPhase('results');
+  }, [sections, answers, rules, addXP, playSound]);
+
+  const handleTimeUp = useCallback(() => {
+    setTimerActive(false);
+    toast.error("TIME EXPIRED: SIMULATION ENDED.");
+    calculateResults();
+  }, [calculateResults]);
+
+  const startTest = () => {
+    setPhase('test');
+    if (rules.timerMultiplier > 0) {
+      setTimeLeft(Math.floor(config.baseTime * rules.timerMultiplier));
+      setTimerActive(true);
+    }
+  };
   const handleAnswer = (ans) => {
     const isCorrect = ans === currentQuestion.ans;
     setAnswers(p => ({ ...p, [`${currentSectionIndex}-${currentQuestionIndex}`]: { ans, correct: isCorrect } }));
@@ -120,17 +142,6 @@ const MockTest = () => {
     } else {
       calculateResults();
     }
-  };
-
-  const calculateResults = () => {
-    setTimerActive(false);
-    let correctCount = 0;
-    sections.forEach((s, sI) => { s.questions.forEach((_, qI) => { if (answers[`${sI}-${qI}`]?.correct) correctCount++; }); });
-    const totalQs = sections.reduce((sum, s) => sum + s.questions.length, 0);
-    const passed = Math.round((correctCount / totalQs) * 100) >= rules.passingThreshold;
-    addXP(Math.floor(correctCount * 10 * rules.xpMultiplier + (passed ? 50 : 0)));
-    playSound(passed ? 'complete' : 'wrong');
-    setPhase('results');
   };
 
   const currentSection = sections[currentSectionIndex];

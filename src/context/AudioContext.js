@@ -20,7 +20,9 @@ export const AudioProvider = ({ children }) => {
   const [musicPlaying, setMusicPlaying] = useState(false);
   const [musicVolume, setMusicVolume] = useState(() => {
     const saved = localStorage.getItem('musicVolume');
-    return saved !== null ? parseFloat(saved) : 0.01;
+    if (saved !== null) return parseFloat(saved);
+    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+    return isMobile ? 0.10 : 0.05;
   });
   const [isInitialized, setIsInitialized] = useState(false);
   const [voices, setVoices] = useState([]);

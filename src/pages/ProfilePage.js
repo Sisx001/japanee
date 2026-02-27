@@ -291,6 +291,51 @@ const SettingsPage = () => {
                   </Button>
                 </div>
 
+                {/* Language Selection */}
+                <div className="space-y-4 glass-light p-6 rounded-3xl">
+                  <Label className="text-lg font-black tracking-tight flex items-center gap-2">
+                    <Globe className="w-5 h-5 text-indigo-500" />
+                    Language Interface
+                  </Label>
+                  <div className="grid grid-cols-2 gap-3">
+                    {[
+                      { id: 'en', label: 'ENGLISH' },
+                      { id: 'bn', label: 'BENGALI' }
+                    ].map(lang => (
+                      <button
+                        key={lang.id}
+                        onClick={() => setLanguagePreference(lang.id)}
+                        className={`h-12 rounded-xl font-black uppercase text-[10px] tracking-widest transition-all ${settings.languagePreference === lang.id ? 'bg-indigo-500 text-white shadow-lg' : 'glass hover:bg-white/10'}`}
+                      >
+                        {lang.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Difficulty Mode */}
+                <div className="space-y-4 glass-light p-6 rounded-3xl">
+                  <Label className="text-lg font-black tracking-tight flex items-center gap-2">
+                    <Target className="w-5 h-5 text-rose-500" />
+                    Mastery Difficulty
+                  </Label>
+                  <div className="grid grid-cols-3 gap-3">
+                    {[
+                      { id: 'easy', label: 'TRAINEE' },
+                      { id: 'medium', label: 'OPERATOR' },
+                      { id: 'hard', label: 'ELITE' }
+                    ].map(diff => (
+                      <button
+                        key={diff.id}
+                        onClick={() => updateSettings({ difficulty: diff.id })}
+                        className={`h-12 rounded-xl font-black uppercase text-[10px] tracking-widest transition-all ${settings.difficulty === diff.id ? 'bg-rose-500 text-white shadow-lg' : 'glass hover:bg-white/10'}`}
+                      >
+                        {diff.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
                 {/* Music & Sound Control */}
                 <div className="space-y-6 glass-light p-6 rounded-3xl">
                   <div className="flex items-center justify-between">
