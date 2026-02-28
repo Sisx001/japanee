@@ -27,7 +27,15 @@ const ReadingPractice = () => {
   const [showRomaji, setShowRomaji] = useState(true);
   const [showTranslation, setShowTranslation] = useState(false);
 
-  const [emblaRef, emblaApi] = useEmblaCarousel({ loop: false, align: 'start' });
+  const [isAutoFlow, setIsAutoFlow] = useState(false);
+  const [autoFlowTimer, setAutoFlowTimer] = useState(null);
+
+  const [emblaRef, emblaApi] = useEmblaCarousel({
+    loop: false,
+    align: 'start',
+    dragFree: true,
+    containScroll: 'trimSnaps'
+  });
 
   // Pattern SVG for card backgrounds
   const asanohaPattern = `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80' viewBox='0 0 80 80'%3E%3Cpath fill='%236366f1' fill-opacity='0.05' d='M40 0l40 40-40 40L0 40z'/%3E%3C/svg%3E")`;
@@ -52,6 +60,21 @@ const ReadingPractice = () => {
     emblaApi.on('select', onSelect);
     return () => emblaApi.off('select', onSelect);
   }, [emblaApi, onSelect]);
+
+  // Auto-Flow Logic
+  useEffect(() => {
+    if (isAutoFlow && !showQuiz) {
+      const timer = setTimeout(() => {
+        if (currentParagraphIndex < totalParagraphs - 1) {
+          setCurrentParagraphIndex(prev => prev + 1);
+        } else {
+          setShowQuiz(true);
+          setIsAutoFlow(false);
+        }
+      }, 5000); // 5 seconds per paragraph
+      return () => clearTimeout(timer);
+    }
+  }, [isAutoFlow, currentParagraphIndex, totalParagraphs, showQuiz]);
 
   useEffect(() => {
     if (emblaApi && !showQuiz) {
@@ -171,7 +194,11 @@ const ReadingPractice = () => {
                   </div>
                 </div>
 
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <Button variant={isAutoFlow ? 'default' : 'ghost'} onClick={() => setIsAutoFlow(!isAutoFlow)} className={`h-16 rounded-2xl font-black text-[10px] tracking-[0.2em] transition-all ${isAutoFlow ? 'bg-amber-500 text-white shadow-lg animate-pulse' : 'glass text-slate-400'}`}>
+                    <Zap className={`w-4 h-4 mr-2 ${isAutoFlow ? 'animate-bounce' : ''}`} />
+                    Zen Auto-Flow
+                  </Button>
                   <Button variant={showRomaji ? 'default' : 'ghost'} onClick={() => setShowRomaji(!showRomaji)} className={`h-16 rounded-2xl font-black text-[10px] tracking-[0.2em] transition-all ${showRomaji ? 'bg-rose-500 text-white shadow-lg' : 'glass text-slate-400'}`}>Show Romaji</Button>
                   <Button variant={showTranslation ? 'default' : 'ghost'} onClick={() => setShowTranslation(!showTranslation)} className={`h-16 rounded-2xl font-black text-[10px] tracking-[0.2em] transition-all ${showTranslation ? 'bg-indigo-500 text-white shadow-lg' : 'glass text-slate-400'}`}>Show Translation</Button>
                 </div>

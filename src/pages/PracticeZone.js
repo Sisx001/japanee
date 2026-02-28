@@ -37,7 +37,6 @@ const PracticeZone = () => {
     { title: 'Listening Hub', icon: Headphones, desc: 'Audio Recognition', path: '/practice/listening', color: 'text-blue-500' },
     { title: 'Story Library', icon: BookText, desc: 'Reading Practice', path: '/practice/reading', color: 'text-cyan-500' },
     { title: 'Unlimited Practice', icon: Infinity, desc: 'Random Challenges', path: '/practice/unlimited', color: 'text-pink-500', badge: 'Bonus' },
-    { title: 'Zen Library', icon: Library, desc: 'PDF Ebook Viewer', path: '/ebooks', color: 'text-indigo-500' },
   ];
 
   return (

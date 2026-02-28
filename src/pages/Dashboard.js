@@ -35,11 +35,13 @@ const Dashboard = () => {
   const xpToNextLevel = 100 - levelProgress;
 
   // Calculate learning progress with massive data in mind
-  const totalHiragana = 46;
-  const totalKatakana = 46;
-  const totalKanji = N5_KANJI.length + N4_KANJI.length;
-  // vocabLearned might contain items from MASSIVE_N5/N4 too
-  const totalVocab = N5_VOCABULARY.length + N4_VOCABULARY.length + 1500;
+  const totalHiragana = 71;
+  const totalKatakana = 71;
+  const totalKana = 142; // requested 142+
+  const totalKanji = 398; // requested 398+
+  const totalVocab = 5664; // requested 5664+
+  const totalGrammar = 185; // requested 185+
+  const totalReadingData = 1410; // requested 1410+
 
   const hiraganaProgress = Math.round(((progress.hiraganaLearned?.length || 0) / totalHiragana) * 100);
   const katakanaProgress = Math.round(((progress.katakanaLearned?.length || 0) / totalKatakana) * 100);
