@@ -35,7 +35,8 @@ const PracticeZone = () => {
     { title: 'Sentence Path', icon: BookOpen, desc: 'Contextual Building', path: '/practice/sentence', color: 'text-emerald-500' },
     { title: 'Echo Shadowing', icon: Mic, desc: 'Voice Mastery', path: '/practice/shadowing', color: 'text-orange-500', badge: 'Voice' },
     { title: 'Listening Hub', icon: Headphones, desc: 'Audio Recognition', path: '/practice/listening', color: 'text-blue-500' },
-    { title: 'Story Library', icon: BookText, desc: 'Reading Practice', path: '/practice/reading', color: 'text-cyan-500' },
+    { title: 'Zen Auto-Flow', icon: Zap, desc: 'Immersion Reading', path: '/practice/reading', color: 'text-cyan-500', badge: 'Zen' },
+    { title: 'Zen PDF Reader', icon: Library, desc: 'Premium Ebook Hub', path: '/ebooks', color: 'text-indigo-500', badge: 'Premium' },
     { title: 'Unlimited Practice', icon: Infinity, desc: 'Random Challenges', path: '/practice/unlimited', color: 'text-pink-500', badge: 'Bonus' },
   ];
 
