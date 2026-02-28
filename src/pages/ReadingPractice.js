@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
+import useEmblaCarousel from 'embla-carousel-react';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { useProfile } from '@/context/ProfileContext';
 import { useAudio } from '@/context/AudioContext';
@@ -26,6 +27,8 @@ const ReadingPractice = () => {
   const [showRomaji, setShowRomaji] = useState(true);
   const [showTranslation, setShowTranslation] = useState(false);
 
+  const [emblaRef, emblaApi] = useEmblaCarousel({ loop: false, align: 'start' });
+
   // Pattern SVG for card backgrounds
   const asanohaPattern = `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80' viewBox='0 0 80 80'%3E%3Cpath fill='%236366f1' fill-opacity='0.05' d='M40 0l40 40-40 40L0 40z'/%3E%3C/svg%3E")`;
 
@@ -38,6 +41,23 @@ const ReadingPractice = () => {
     initializeAudio();
     speak(text);
   };
+
+  const onSelect = useCallback(() => {
+    if (!emblaApi) return;
+    setCurrentParagraphIndex(emblaApi.selectedScrollSnap());
+  }, [emblaApi]);
+
+  useEffect(() => {
+    if (!emblaApi) return;
+    emblaApi.on('select', onSelect);
+    return () => emblaApi.off('select', onSelect);
+  }, [emblaApi, onSelect]);
+
+  useEffect(() => {
+    if (emblaApi && !showQuiz) {
+      emblaApi.scrollTo(currentParagraphIndex);
+    }
+  }, [currentParagraphIndex, emblaApi, showQuiz]);
 
   const nextParagraph = () => {
     if (currentParagraphIndex < totalParagraphs - 1) {
@@ -89,18 +109,18 @@ const ReadingPractice = () => {
         {/* Cinematic Header */}
         <div className="flex flex-col md:flex-row items-center justify-between gap-6">
           <div className="text-center md:text-left space-y-1">
-            <h1 className="text-3xl md:text-5xl font-black italic tracking-tighter uppercase mb-1">Context Stream</h1>
-            <p className="text-[10px] md:text-sm font-black uppercase tracking-[0.2em] md:tracking-[0.3em] text-slate-500 italic opacity-80">Reading Protocol // {currentPassage.level} Verification</p>
+            <h1 className="text-3xl md:text-5xl font-black italic tracking-tighter uppercase mb-1">Reading Practice</h1>
+            <p className="text-[10px] md:text-sm font-black uppercase tracking-[0.2em] md:tracking-[0.3em] text-slate-500 italic opacity-80">Japanese Studies // {currentPassage.level} Verification</p>
           </div>
           <div className="flex items-center gap-4 glass px-5 md:px-6 py-3 md:py-4 rounded-2xl md:rounded-3xl shadow-xl w-full md:w-auto justify-center">
             <div className="text-center">
               <div className="text-xl md:text-2xl font-black italic text-rose-500">{score.correct}/{score.total}</div>
-              <div className="text-[8px] font-black uppercase tracking-widest text-slate-400">Precision</div>
+              <div className="text-[8px] font-black uppercase tracking-widest text-slate-400">Score</div>
             </div>
             <div className="w-px h-8 bg-slate-200 dark:bg-white/10" />
             <div className="text-center">
               <div className="text-xl md:text-2xl font-black italic text-indigo-500">{currentPassageIndex + 1}/{READING_PASSAGES.length}</div>
-              <div className="text-[8px] font-black uppercase tracking-widest text-slate-400">Stream</div>
+              <div className="text-[8px] font-black uppercase tracking-widest text-slate-400">Progress</div>
             </div>
           </div>
         </div>
@@ -137,15 +157,23 @@ const ReadingPractice = () => {
                 </div>
               </CardHeader>
               <CardContent className="p-6 md:p-10 space-y-6 md:space-y-10">
-                <div className="glass-light p-6 md:p-10 rounded-[2rem] md:rounded-[3rem] border border-rose-500/5 group/text transition-all hover:bg-white/40 dark:hover:bg-slate-900/60" onClick={() => handleSpeak(currentParagraph.jp)}>
-                  <div className="text-xl md:text-3xl font-black japanese-text leading-relaxed text-slate-800 dark:text-slate-100 drop-shadow-sm">
-                    <TranslateHelper romaji={currentParagraph?.romaji} bengali={currentParagraph?.bn} english={currentParagraph?.en} className="japanese-text-premium text-2xl md:text-3xl">{currentParagraph?.jp}</TranslateHelper>
+                <div className="overflow-hidden" ref={emblaRef}>
+                  <div className="flex">
+                    {currentPassage.paragraphs.map((para, idx) => (
+                      <div key={idx} className="flex-[0_0_100%] min-w-0 pl-1">
+                        <div className="glass-light p-6 md:p-10 rounded-[2rem] md:rounded-[3rem] border border-rose-500/5 group/text transition-all hover:bg-white/40 dark:hover:bg-slate-900/60" onClick={() => handleSpeak(para.jp)}>
+                          <div className="text-xl md:text-3xl font-black japanese-text leading-relaxed text-slate-800 dark:text-slate-100 drop-shadow-sm">
+                            <TranslateHelper romaji={para?.romaji} bengali={para?.bn} english={para?.en} className="japanese-text-premium text-2xl md:text-3xl">{para?.jp}</TranslateHelper>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
                   </div>
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
-                  <Button variant={showRomaji ? 'default' : 'ghost'} onClick={() => setShowRomaji(!showRomaji)} className={`h-16 rounded-2xl font-black text-[10px] tracking-[0.2em] transition-all ${showRomaji ? 'bg-rose-500 text-white shadow-lg' : 'glass text-slate-400'}`}>ROMAJI SYNC</Button>
-                  <Button variant={showTranslation ? 'default' : 'ghost'} onClick={() => setShowTranslation(!showTranslation)} className={`h-16 rounded-2xl font-black text-[10px] tracking-[0.2em] transition-all ${showTranslation ? 'bg-indigo-500 text-white shadow-lg' : 'glass text-slate-400'}`}>SEMANTIC LINK</Button>
+                  <Button variant={showRomaji ? 'default' : 'ghost'} onClick={() => setShowRomaji(!showRomaji)} className={`h-16 rounded-2xl font-black text-[10px] tracking-[0.2em] transition-all ${showRomaji ? 'bg-rose-500 text-white shadow-lg' : 'glass text-slate-400'}`}>Show Romaji</Button>
+                  <Button variant={showTranslation ? 'default' : 'ghost'} onClick={() => setShowTranslation(!showTranslation)} className={`h-16 rounded-2xl font-black text-[10px] tracking-[0.2em] transition-all ${showTranslation ? 'bg-indigo-500 text-white shadow-lg' : 'glass text-slate-400'}`}>Show Translation</Button>
                 </div>
 
                 {(showRomaji || showTranslation) && (

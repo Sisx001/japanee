@@ -33,11 +33,11 @@ const LandingPage = () => {
   };
 
   const stats = [
-    { num: "142", label: 'Traditional Kana', icon: 'あ' },
-    { num: "398", label: 'Kanji Hub', icon: '漢' },
-    { num: "5664", label: 'Continue Learning', icon: '単' },
-    { num: "185", label: 'Grammar Guide', icon: '文' },
-    { num: "1410", label: 'Reading Practice', icon: '話' }
+    { num: "142+", label: 'Traditional Kana', icon: 'あ' },
+    { num: "398+", label: 'Kanji Hub', icon: '漢' },
+    { num: "5664+", label: 'Continue Learning', icon: '単' },
+    { num: "185+", label: 'Grammar Guide', icon: '文' },
+    { num: "1410+", label: 'Reading Practice', icon: '話' }
   ];
 
   return (

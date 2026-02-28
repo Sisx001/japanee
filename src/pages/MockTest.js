@@ -50,8 +50,8 @@ const MockTest = () => {
   const rules = DIFFICULTY_RULES[difficulty] || DIFFICULTY_RULES.easy;
 
   const TEST_CONFIG = {
-    N5: { name: 'JLPT N5 COLLECTIVE EXAM', name_bn: 'JLPT N5 কালেক্টিভ এক্সাম', baseTime: 25 * 60, sections: [{ type: 'vocab', name: 'VOCABULARY', questions: 10 }, { type: 'kanji', name: 'KANJI HUB', questions: 8 }, { type: 'grammar', name: 'GRAMMAR', questions: 7 }] },
-    N4: { name: 'JLPT N4 COLLECTIVE EXAM', name_bn: 'JLPT N4 কালেক্টিভ এক্সাম', baseTime: 30 * 60, sections: [{ type: 'vocab', name: 'VOCABULARY', questions: 12 }, { type: 'kanji', name: 'KANJI HUB', questions: 10 }, { type: 'grammar', name: 'GRAMMAR', questions: 8 }] }
+    N5: { name: 'N5 Mock Test', name_bn: 'N5 মক টেস্ট', baseTime: 25 * 60, sections: [{ type: 'vocab', name: 'VOCABULARY', questions: 10 }, { type: 'kanji', name: 'KANJI HUB', questions: 8 }, { type: 'grammar', name: 'GRAMMAR', questions: 7 }] },
+    N4: { name: 'N4 Mock Test', name_bn: 'N4 মক টেস্ট', baseTime: 30 * 60, sections: [{ type: 'vocab', name: 'VOCABULARY', questions: 12 }, { type: 'kanji', name: 'KANJI HUB', questions: 10 }, { type: 'grammar', name: 'GRAMMAR', questions: 8 }] }
   };
 
   const config = TEST_CONFIG[level];
@@ -180,7 +180,20 @@ const MockTest = () => {
   const questionsDone = sections.slice(0, currentSectionIndex).reduce((sum, s) => sum + s.questions.length, 0) + currentQuestionIndex + 1;
   const progress = (questionsDone / totalQuestions) * 100;
 
-  if (loading || !config || !currentSection || !currentQuestion) return <MainLayout><div className="flex h-[50vh] items-center justify-center"><Brain className="animate-spin w-12 h-12 text-rose-500" /></div></MainLayout>;
+  if (loading || !config) return <MainLayout><div className="flex h-[50vh] items-center justify-center"><Brain className="animate-spin w-12 h-12 text-rose-500" /></div></MainLayout>;
+
+  if (sections.length === 0 || !currentSection || !currentQuestion) {
+    return (
+      <MainLayout>
+        <div className="flex flex-col items-center justify-center h-[50vh] space-y-4">
+          <Terminal className="w-16 h-16 text-rose-500" />
+          <h2 className="text-2xl font-bold text-white">Error: Test Data Not Found</h2>
+          <p className="text-gray-400">Failed to load test parameters at this level.</p>
+          <button onClick={() => navigate('/dashboard')} className="px-6 py-2 bg-rose-500 text-white rounded-lg">ABORT & RETURN</button>
+        </div>
+      </MainLayout>
+    );
+  }
 
   if (phase === 'intro') {
     return (

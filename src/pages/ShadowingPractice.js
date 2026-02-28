@@ -98,7 +98,7 @@ const ShadowingPractice = () => {
         }
     };
 
-    const handePrevious = () => {
+    const handlePrevious = () => {
         if (currentIndex > 0) {
             setCurrentIndex(prev => prev - 1);
             setShowAnalysis(false);
@@ -204,7 +204,7 @@ const ShadowingPractice = () => {
                                     <div className={`p-10 rounded-[3rem] transition-all duration-700 animate-in slide-in-from-top-8
                                         ${showAnalysis ? (matchScore > 80 ? 'bg-green-500/10 border-2 border-green-500/20' : 'bg-rose-500/10 border-2 border-rose-500/20') : 'glass'}`}>
                                         <div className="flex items-center justify-between mb-6 px-2">
-                                            <span className="text-[10px] font-black uppercase tracking-widest text-slate-500">Neural Comparison Output</span>
+                                            <span className="text-[10px] font-black uppercase tracking-widest text-slate-500">Accuracy Results</span>
                                             {showAnalysis && <div className="flex items-center gap-3"><Activity className={`w-5 h-5 ${matchScore > 80 ? 'text-green-500' : 'text-rose-500'}`} /><span className={`text-2xl font-black italic ${matchScore > 80 ? 'text-green-500' : 'text-rose-500'}`}>{matchScore}% SYNC</span></div>}
                                         </div>
 
@@ -229,7 +229,7 @@ const ShadowingPractice = () => {
                         </Card>
 
                         <div className="flex items-center justify-between gap-6 px-10">
-                            <Button variant="ghost" onClick={handePrevious} disabled={currentIndex === 0} className="rounded-xl h-12 md:h-16 px-4 md:px-8 glass font-black uppercase tracking-widest text-slate-400 hover:text-rose-500 text-[10px] md:text-base">
+                            <Button variant="ghost" onClick={handlePrevious} disabled={currentIndex === 0} className="rounded-xl h-12 md:h-16 px-4 md:px-8 glass font-black uppercase tracking-widest text-slate-400 hover:text-rose-500 text-[10px] md:text-base">
                                 <ChevronLeft className="w-4 h-4 md:w-6 md:h-6 mr-2" /> PREV
                             </Button>
                             <div className="text-[10px] md:text-sm font-black italic text-slate-500 uppercase tracking-[0.2em] md:tracking-[0.4em]">UNIT {currentIndex + 1} // {MASSIVE_SENTENCES.length}</div>
@@ -245,7 +245,7 @@ const ShadowingPractice = () => {
                             <CardHeader className="p-8 border-b border-rose-500/10">
                                 <CardTitle className="text-xl font-black italic flex items-center gap-3 uppercase tracking-tighter">
                                     <Sparkles className="w-6 h-6 text-rose-500 animate-pulse" />
-                                    Accent Calibration
+                                    Speaking Tips
                                 </CardTitle>
                             </CardHeader>
                             <CardContent className="p-8 space-y-8">

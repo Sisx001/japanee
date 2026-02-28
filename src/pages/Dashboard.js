@@ -52,7 +52,7 @@ const Dashboard = () => {
     { icon: '漢', title: 'Kanji', subtitle: `${progress.kanjiLearned?.length || 0}/${totalKanji}`, path: '/kanji', color: 'bg-purple-500 shadow-purple-500/20' },
     { icon: '単', title: 'Vocabulary', subtitle: `${progress.vocabLearned?.length || 0} words`, path: '/vocab', color: 'bg-green-500 shadow-green-500/20' },
     { icon: '🎙️', title: 'Shadowing', subtitle: 'Voice Practice', path: '/practice/shadowing', color: 'bg-orange-500 shadow-orange-500/20' },
-    { icon: '📄', title: 'PDF Reader', subtitle: 'Study Guides', path: '/ebooks', color: 'bg-rose-600 shadow-rose-500/20' },
+    { icon: '文', title: 'Grammar', subtitle: 'Grammar Guide', path: '/grammar', color: 'bg-indigo-600 shadow-indigo-500/20' },
   ];
 
 
