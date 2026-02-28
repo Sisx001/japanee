@@ -174,13 +174,10 @@ const MockTest = () => {
     }
   };
 
+  if (loading || !config) return <MainLayout><div className="flex h-[50vh] items-center justify-center"><Brain className="animate-spin w-12 h-12 text-rose-500" /></div></MainLayout>;
+
   const currentSection = sections[currentSectionIndex];
   const currentQuestion = currentSection?.questions?.[currentQuestionIndex];
-  const totalQuestions = sections.reduce((sum, s) => sum + s.questions.length, 0);
-  const questionsDone = sections.slice(0, currentSectionIndex).reduce((sum, s) => sum + s.questions.length, 0) + currentQuestionIndex + 1;
-  const progress = (questionsDone / totalQuestions) * 100;
-
-  if (loading || !config) return <MainLayout><div className="flex h-[50vh] items-center justify-center"><Brain className="animate-spin w-12 h-12 text-rose-500" /></div></MainLayout>;
 
   if (sections.length === 0 || !currentSection || !currentQuestion) {
     return (
@@ -195,6 +192,9 @@ const MockTest = () => {
     );
   }
 
+  const totalQuestions = sections.reduce((sum, s) => sum + (s.questions?.length || 0), 0);
+  const questionsDone = sections.slice(0, currentSectionIndex).reduce((sum, s) => sum + (s.questions?.length || 0), 0) + currentQuestionIndex + 1;
+  const progress = totalQuestions > 0 ? (questionsDone / totalQuestions) * 100 : 0;
   if (phase === 'intro') {
     return (
       <MainLayout>

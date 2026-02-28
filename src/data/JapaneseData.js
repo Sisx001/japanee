@@ -607,7 +607,7 @@ export const PRACTICE_SENTENCES = [
   { jp: '日本の料理が好きです。', romaji: 'Nihon no ryouri ga suki desu.', en: 'I like Japanese food.', bn: 'আমি জাপানি খাবার পছন্দ করি।', level: 'N5' },
   { jp: '週末に何をしますか。', romaji: 'Shuumatsu ni nani wo shimasu ka.', en: 'What will you do on the weekend?', bn: 'সপ্তাহান্তে আপনি কী করবেন?', level: 'N5' },
   { jp: '毎朝、六時に起きます。', romaji: 'Mai asa, rokuji ni okimasu.', en: 'I wake up at 6 every morning.', bn: 'আমি প্রতিদিন সকালে ছয়টায় উঠি।', level: 'N5' },
-  ...MASSIVE_SENTENCES.map(s => ({
+  ...(MASSIVE_SENTENCES || []).map(s => ({
     jp: s.jp,
     romaji: s.romaji,
     en: s.en,
