@@ -11,7 +11,11 @@ import {
   Zap, Flame, Star, Target, Trophy, BookOpen,
   ChevronRight, Sparkles, Volume2, User
 } from 'lucide-react';
-import { HIRAGANA, KATAKANA, N5_KANJI, N4_KANJI, N5_VOCABULARY, N4_VOCABULARY } from '@/data/JapaneseData';
+import {
+  HIRAGANA, KATAKANA, ZEN_LEXICON, COMBINED_GRAMMAR, MASSIVE_SENTENCES
+} from '@/data/JapaneseData';
+import { N5_KANJI_MASSIVE, N4_KANJI_MASSIVE } from '@/data/MassiveKanji';
+import { MASSIVE_STORIES } from '@/data/MassiveStories';
 
 const Dashboard = () => {
   const { profile, progress, getLevelTitle, updateStreak, checkBadges } = useProfile();
@@ -34,14 +38,14 @@ const Dashboard = () => {
   const levelProgress = (progress.xp % 100);
   const xpToNextLevel = 100 - levelProgress;
 
-  // Calculate learning progress with massive data in mind
-  const totalHiragana = 71;
-  const totalKatakana = 71;
-  const totalKana = 142; // requested 142+
-  const totalKanji = 398; // requested 398+
-  const totalVocab = 5664; // requested 5664+
-  const totalGrammar = 185; // requested 185+
-  const totalReadingData = 1410; // requested 1410+
+  // Dynamic Data Stats from Real Content
+  const totalHiragana = HIRAGANA.length;
+  const totalKatakana = KATAKANA.length;
+  const totalKana = totalHiragana + totalKatakana;
+  const totalKanji = N5_KANJI_MASSIVE.length + N4_KANJI_MASSIVE.length;
+  const totalVocab = ZEN_LEXICON.length;
+  const totalGrammar = COMBINED_GRAMMAR.length;
+  const totalReadingData = MASSIVE_SENTENCES.length + MASSIVE_STORIES.length;
 
   const hiraganaProgress = Math.round(((progress.hiraganaLearned?.length || 0) / totalHiragana) * 100);
   const katakanaProgress = Math.round(((progress.katakanaLearned?.length || 0) / totalKatakana) * 100);
@@ -52,7 +56,8 @@ const Dashboard = () => {
     { icon: 'あ', title: 'Hiragana', subtitle: `${progress.hiraganaLearned?.length || 0}/${totalHiragana}`, path: '/kana/hiragana', color: 'bg-rose-500 shadow-rose-500/20' },
     { icon: 'ア', title: 'Katakana', subtitle: `${progress.katakanaLearned?.length || 0}/${totalKatakana}`, path: '/kana/katakana', color: 'bg-blue-500 shadow-blue-500/20' },
     { icon: '漢', title: 'Kanji', subtitle: `${progress.kanjiLearned?.length || 0}/${totalKanji}`, path: '/kanji', color: 'bg-purple-500 shadow-purple-500/20' },
-    { icon: '単', title: 'Vocabulary', subtitle: `${progress.vocabLearned?.length || 0} words`, path: '/vocab', color: 'bg-green-500 shadow-green-500/20' },
+    { icon: '単', title: 'Vocabulary', subtitle: `${progress.vocabLearned?.length || 0}/${totalVocab}`, path: '/vocab', color: 'bg-green-500 shadow-green-500/20' },
+    { icon: '格', title: 'Zen Grammar', subtitle: `${progress.grammarLearned?.length || 0}/${totalGrammar}`, path: '/grammar', color: 'bg-blue-600 shadow-blue-500/20' },
     { icon: '🎙️', title: 'Shadowing', subtitle: 'Voice Practice', path: '/practice/shadowing', color: 'bg-orange-500 shadow-orange-500/20' },
     { icon: '⚡', title: 'Auto-Flow', subtitle: 'Zen Reading', path: '/practice/reading', color: 'bg-cyan-500 shadow-cyan-500/20' },
     { icon: '📚', title: 'PDF Reader', subtitle: 'Zen Library', path: '/ebooks', color: 'bg-indigo-600 shadow-indigo-500/20' },
@@ -214,6 +219,7 @@ const Dashboard = () => {
                   { label: 'Katakana', value: katakanaProgress, color: 'bg-blue-500' },
                   { label: 'Kanji', value: kanjiProgress, color: 'bg-purple-500' },
                   { label: 'Vocabulary', value: vocabProgress, color: 'bg-green-500' },
+                  { label: 'Grammar', value: Math.round(((progress.grammarLearned?.length || 0) / totalGrammar) * 100) || 0, color: 'bg-blue-600' },
                 ].map((item, idx) => (
                   <div key={idx} className="space-y-2">
                     <div className="flex justify-between items-end">

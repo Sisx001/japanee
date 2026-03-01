@@ -18,28 +18,33 @@ const KanaHub = () => {
   const [activeTab, setActiveTab] = useState(type || 'hiragana');
   const [selectedKana, setSelectedKana] = useState(null);
 
-  // Group kana by row for display
-  const groupByRow = (kanaList) => {
-    const groups = {};
-    const basicKana = kanaList.slice(0, 46); // Only basic kana
+  // Group kana by category and row for display
+  const categorizeKana = (kanaList) => {
+    const categories = {
+      basic: { groups: {}, order: ['vowel', 'k', 's', 't', 'n', 'h', 'm', 'y', 'r', 'w'] },
+      dakuten: { groups: {}, order: ['g', 'z', 'd', 'b'] },
+      handakuten: { groups: {}, order: ['p'] }
+    };
 
-    basicKana.forEach(k => {
-      const row = k.row;
-      if (!groups[row]) groups[row] = [];
-      groups[row].push(k);
+    kanaList.forEach(k => {
+      let cat = 'basic';
+      if (['g', 'z', 'd', 'b'].includes(k.row)) cat = 'dakuten';
+      else if (k.row === 'p') cat = 'handakuten';
+
+      if (!categories[cat].groups[k.row]) categories[cat].groups[k.row] = [];
+      categories[cat].groups[k.row].push(k);
     });
 
-    const rowOrder = ['vowel', 'k', 's', 't', 'n', 'h', 'm', 'y', 'r', 'w'];
-    return { groups, order: rowOrder.filter(r => groups[r]) };
+    return categories;
   };
 
-  const hiraganaData = groupByRow(HIRAGANA);
-  const katakanaData = groupByRow(KATAKANA);
+  const hiraganaCategorized = categorizeKana(HIRAGANA);
+  const katakanaCategorized = categorizeKana(KATAKANA);
 
-  const currentData = activeTab === 'hiragana' ? hiraganaData : katakanaData;
+  const currentCategorized = activeTab === 'hiragana' ? hiraganaCategorized : katakanaCategorized;
   const learnedKey = `${activeTab}Learned`;
   const learnedCount = progress[learnedKey]?.length || 0;
-  const totalCount = 46;
+  const totalCount = activeTab === 'hiragana' ? HIRAGANA.length : KATAKANA.length;
   const progressPercent = Math.round((learnedCount / totalCount) * 100);
 
   const handleKanaClick = (kana) => {
@@ -66,7 +71,12 @@ const KanaHub = () => {
     m: 'M-STREAM',
     y: 'Y-STREAM',
     r: 'R-STREAM',
-    w: 'W-STREAM'
+    w: 'W-STREAM',
+    g: 'G-VOICE',
+    z: 'Z-VOICE',
+    d: 'D-VOICE',
+    b: 'B-VOICE',
+    p: 'P-VOICE'
   };
 
   return (
@@ -128,50 +138,156 @@ const KanaHub = () => {
             </TabsTrigger>
           </TabsList>
 
-          <TabsContent value={activeTab} className="space-y-10">
-            {currentData.order.map((row) => (
-              <div key={row} className="space-y-4">
-                <div className="flex items-center gap-4">
-                  <h3 className="text-xs font-black tracking-[0.3em] text-slate-400 uppercase shrink-0">
-                    {rowLabels[row]}
-                  </h3>
-                  <div className="h-px w-full bg-slate-200 dark:bg-slate-800" />
-                </div>
-                <div className="grid grid-cols-5 sm:flex sm:flex-wrap gap-3">
-                  {currentData.groups[row]?.map((kana, idx) => {
-                    const learned = isLearned(kana.char);
-                    const isSelected = selectedKana?.char === kana.char;
-
-                    return (
-                      <button
-                        key={idx}
-                        onClick={() => handleKanaClick(kana)}
-                        className={`group relative w-full sm:w-20 h-20 rounded-3xl flex flex-col items-center justify-center transition-all duration-300
-                          ${isSelected
-                            ? 'bg-rose-500 text-white scale-110 shadow-2xl shadow-rose-500/40 z-10'
-                            : learned
-                              ? 'bg-rose-500/10 text-rose-500 border border-rose-500/20 hover:bg-rose-500/20'
-                              : 'bg-white/60 dark:bg-slate-900/60 border border-white/10 dark:hover:border-rose-500/50 hover:bg-rose-500/5'
-                          }`}
-                      >
-                        <span className="text-3xl japanese-text font-black drop-shadow-sm">{kana.char}</span>
-                        {settings.romajiMode !== 'off' && (
-                          <span className={`text-[10px] font-bold tracking-widest uppercase opacity-60 ${isSelected ? 'text-white' : 'text-slate-500'}`}>{kana.romaji}</span>
-                        )}
-                        {learned && !isSelected && (
-                          <div className="absolute top-2 right-2">
-                            <div className="w-2 h-2 rounded-full bg-rose-500 shadow-[0_0_8px_#f43f5e]" />
-                          </div>
-                        )}
-
-                        {/* Hover Glow */}
-                        <div className="absolute inset-0 rounded-3xl bg-rose-500 opacity-0 group-hover:opacity-5 blur-xl transition-opacity pointer-events-none" />
-                      </button>
-                    );
-                  })}
-                </div>
+          <TabsContent value={activeTab} className="space-y-16">
+            {/* Basic Section */}
+            <div className="space-y-8">
+              <div className="flex items-center gap-4">
+                <h2 className="text-lg font-black italic tracking-tighter text-slate-900 dark:text-white uppercase">Basic Matrix</h2>
+                <div className="h-px flex-1 bg-gradient-to-r from-slate-200 to-transparent dark:from-slate-800" />
               </div>
-            ))}
+              <div className="space-y-10">
+                {currentCategorized.basic.order.map((row) => (
+                  <div key={row} className="space-y-4">
+                    <div className="flex items-center gap-4">
+                      <h3 className="text-[10px] font-black tracking-[0.3em] text-slate-400 uppercase shrink-0">
+                        {rowLabels[row]}
+                      </h3>
+                      <div className="h-px w-full bg-slate-100 dark:bg-slate-800/50" />
+                    </div>
+                    <div className="grid grid-cols-5 sm:flex sm:flex-wrap gap-3">
+                      {currentCategorized.basic.groups[row]?.map((kana, idx) => {
+                        const learned = isLearned(kana.char);
+                        const isSelected = selectedKana?.char === kana.char;
+
+                        return (
+                          <button
+                            key={idx}
+                            onClick={() => handleKanaClick(kana)}
+                            className={`group relative w-full sm:w-20 h-20 rounded-2xl md:rounded-3xl flex flex-col items-center justify-center transition-all duration-300
+                              ${isSelected
+                                ? 'bg-rose-500 text-white scale-110 shadow-2xl shadow-rose-500/40 z-10'
+                                : learned
+                                  ? 'bg-rose-500/10 text-rose-500 border border-rose-500/20 hover:bg-rose-500/20'
+                                  : 'bg-white/60 dark:bg-slate-900/60 border border-white/10 dark:hover:border-rose-500/50 hover:bg-rose-500/5'
+                              }`}
+                          >
+                            <span className="text-3xl japanese-text font-black drop-shadow-sm">{kana.char}</span>
+                            {settings.romajiMode !== 'off' && (
+                              <span className={`text-[10px] font-bold tracking-widest uppercase opacity-60 ${isSelected ? 'text-white' : 'text-slate-500'}`}>{kana.romaji}</span>
+                            )}
+                            {learned && !isSelected && (
+                              <div className="absolute top-2 right-2">
+                                <div className="w-2 h-2 rounded-full bg-rose-500 shadow-[0_0_8px_#f43f5e]" />
+                              </div>
+                            )}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Dakuten Section */}
+            <div className="space-y-8">
+              <div className="flex items-center gap-4">
+                <h2 className="text-lg font-black italic tracking-tighter text-slate-900 dark:text-white uppercase">Voiced (Dakuten)</h2>
+                <div className="h-px flex-1 bg-gradient-to-r from-slate-200 to-transparent dark:from-slate-800" />
+              </div>
+              <div className="space-y-10">
+                {currentCategorized.dakuten.order.map((row) => (
+                  <div key={row} className="space-y-4">
+                    <div className="flex items-center gap-4">
+                      <h3 className="text-[10px] font-black tracking-[0.3em] text-cyan-500 uppercase shrink-0">
+                        {rowLabels[row]}
+                      </h3>
+                      <div className="h-px w-full bg-slate-100 dark:bg-slate-800/50" />
+                    </div>
+                    <div className="grid grid-cols-5 sm:flex sm:flex-wrap gap-3">
+                      {currentCategorized.dakuten.groups[row]?.map((kana, idx) => {
+                        const learned = isLearned(kana.char);
+                        const isSelected = selectedKana?.char === kana.char;
+
+                        return (
+                          <button
+                            key={idx}
+                            onClick={() => handleKanaClick(kana)}
+                            className={`group relative w-full sm:w-20 h-20 rounded-2xl md:rounded-3xl flex flex-col items-center justify-center transition-all duration-300
+                              ${isSelected
+                                ? 'bg-cyan-500 text-white scale-110 shadow-2xl shadow-cyan-500/40 z-10'
+                                : learned
+                                  ? 'bg-cyan-500/10 text-cyan-500 border border-cyan-500/20 hover:bg-cyan-500/20'
+                                  : 'bg-white/60 dark:bg-slate-900/60 border border-white/10 dark:hover:border-cyan-500/50 hover:bg-cyan-500/5'
+                              }`}
+                          >
+                            <span className="text-3xl japanese-text font-black drop-shadow-sm">{kana.char}</span>
+                            {settings.romajiMode !== 'off' && (
+                              <span className={`text-[10px] font-bold tracking-widest uppercase opacity-60 ${isSelected ? 'text-white' : 'text-slate-500'}`}>{kana.romaji}</span>
+                            )}
+                            {learned && !isSelected && (
+                              <div className="absolute top-2 right-2">
+                                <div className="w-2 h-2 rounded-full bg-cyan-500 shadow-[0_0_8px_#22d3ee]" />
+                              </div>
+                            )}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Handakuten Section */}
+            <div className="space-y-8">
+              <div className="flex items-center gap-4">
+                <h2 className="text-lg font-black italic tracking-tighter text-slate-900 dark:text-white uppercase">P-Sound (Handakuten)</h2>
+                <div className="h-px flex-1 bg-gradient-to-r from-slate-200 to-transparent dark:from-slate-800" />
+              </div>
+              <div className="space-y-10">
+                {currentCategorized.handakuten.order.map((row) => (
+                  <div key={row} className="space-y-4">
+                    <div className="flex items-center gap-4">
+                      <h3 className="text-[10px] font-black tracking-[0.3em] text-amber-500 uppercase shrink-0">
+                        {rowLabels[row]}
+                      </h3>
+                      <div className="h-px w-full bg-slate-100 dark:bg-slate-800/50" />
+                    </div>
+                    <div className="grid grid-cols-5 sm:flex sm:flex-wrap gap-3">
+                      {currentCategorized.handakuten.groups[row]?.map((kana, idx) => {
+                        const learned = isLearned(kana.char);
+                        const isSelected = selectedKana?.char === kana.char;
+
+                        return (
+                          <button
+                            key={idx}
+                            onClick={() => handleKanaClick(kana)}
+                            className={`group relative w-full sm:w-20 h-20 rounded-2xl md:rounded-3xl flex flex-col items-center justify-center transition-all duration-300
+                              ${isSelected
+                                ? 'bg-amber-500 text-white scale-110 shadow-2xl shadow-amber-500/40 z-10'
+                                : learned
+                                  ? 'bg-amber-500/10 text-amber-500 border border-amber-500/20 hover:bg-amber-500/20'
+                                  : 'bg-white/60 dark:bg-slate-900/60 border border-white/10 dark:hover:border-amber-500/50 hover:bg-amber-500/5'
+                              }`}
+                          >
+                            <span className="text-3xl japanese-text font-black drop-shadow-sm">{kana.char}</span>
+                            {settings.romajiMode !== 'off' && (
+                              <span className={`text-[10px] font-bold tracking-widest uppercase opacity-60 ${isSelected ? 'text-white' : 'text-slate-500'}`}>{kana.romaji}</span>
+                            )}
+                            {learned && !isSelected && (
+                              <div className="absolute top-2 right-2">
+                                <div className="w-2 h-2 rounded-full bg-amber-500 shadow-[0_0_8px_#f59e0b]" />
+                              </div>
+                            )}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
           </TabsContent>
         </Tabs>
 

@@ -13,16 +13,20 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
   Volume2, VolumeX, Sun, Moon, Target, Music, Sparkles, Languages,
   User, Settings, Trophy, Check, Edit2, ShieldAlert, Globe,
-  Zap, Flame, Star, Activity, Crown, History
+  Zap, Flame, Star, Activity, Crown, History,
+  SkipBack, SkipForward, Play, Pause
 } from 'lucide-react';
-import { AVATAR_EMOJIS, BADGES, LEVEL_TITLES, N5_KANJI, N4_KANJI, N5_VOCABULARY, N4_VOCABULARY } from '@/data/JapaneseData';
+import { AVATAR_EMOJIS, BADGES, LEVEL_TITLES, N5_KANJI, N4_KANJI, N5_VOCABULARY, N4_VOCABULARY, ZEN_LEXICON } from '@/data/JapaneseData';
 
 const SettingsPage = () => {
   const {
     profile, progress, settings,
     updateName, updateAvatar, updateSettings, toggleTheme, getLevelTitle, resetProgress, setLanguagePreference
   } = useProfile();
-  const { musicEnabled, toggleMusic, musicVolume, setMusicVolume, playSound } = useAudio();
+  const {
+    musicEnabled, toggleMusic, musicVolume, setMusicVolume, playSound,
+    currentTrack, nextTrack, prevTrack, musicPlaying
+  } = useAudio();
 
   const [isEditingName, setIsEditingName] = useState(false);
   const [newName, setNewName] = useState(profile?.name || '');
@@ -49,11 +53,12 @@ const SettingsPage = () => {
   const earnedBadges = BADGES.filter(b => progress.badges?.includes(b.id));
   const lockedBadges = BADGES.filter(b => !progress.badges?.includes(b.id));
 
-  // Expanded stats
+  // Expanded stats targets
   const totalHiragana = 46;
   const totalKatakana = 46;
   const totalKanji = N5_KANJI.length + N4_KANJI.length;
-  const totalVocab = N5_VOCABULARY.length + N4_VOCABULARY.length + 1500;
+  const totalVocab = ZEN_LEXICON.length;
+  const totalGrammar = 500 + 500; // N5 + N4 target
 
   return (
     <MainLayout>
@@ -187,6 +192,7 @@ const SettingsPage = () => {
                     { label: 'Katakana', current: progress.katakanaLearned?.length || 0, total: totalKatakana, color: 'bg-blue-500' },
                     { label: 'Kanji', current: progress.kanjiLearned?.length || 0, total: totalKanji, color: 'bg-purple-500' },
                     { label: 'Vocabulary', current: progress.vocabLearned?.length || 0, total: totalVocab, color: 'bg-green-500' },
+                    { label: 'Grammar', current: progress.grammarLearned?.length || 0, total: totalGrammar, color: 'bg-amber-500' },
                   ].map((item, idx) => (
                     <div key={idx} className="space-y-2">
                       <div className="flex justify-between items-end">
@@ -352,6 +358,37 @@ const SettingsPage = () => {
                       className="data-[state=checked]:bg-rose-500"
                     />
                   </div>
+
+                  {musicEnabled && (
+                    <div className="space-y-4 p-4 glass rounded-2xl animate-fade-in">
+                      <div className="flex flex-col items-center text-center space-y-2">
+                        <div className="text-[10px] font-black uppercase text-rose-500/50 tracking-[0.2em]">Now Playing</div>
+                        <div className="text-sm font-black tracking-tight truncate max-w-full italic text-rose-600 dark:text-rose-400">
+                          {currentTrack?.title || "Selecting Track..."}
+                        </div>
+                      </div>
+
+                      <div className="flex items-center justify-center gap-6">
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => { prevTrack(); playSound('click'); }}
+                          className="h-10 w-10 rounded-xl hover:bg-rose-500/10 text-rose-500"
+                        >
+                          <SkipBack className="w-5 h-5 fill-current" />
+                        </Button>
+
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => { nextTrack(); playSound('click'); }}
+                          className="h-10 w-10 rounded-xl hover:bg-rose-500/10 text-rose-500"
+                        >
+                          <SkipForward className="w-5 h-5 fill-current" />
+                        </Button>
+                      </div>
+                    </div>
+                  )}
 
                   <div className="space-y-4 pt-4 border-t border-rose-500/10">
                     <div className="flex items-center justify-between">

@@ -17,7 +17,7 @@ const generateRandomProfile = () => {
   const randomAvatar = AVATAR_EMOJIS[Math.floor(Math.random() * AVATAR_EMOJIS.length)];
 
   const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-  const defaultVolume = isMobile ? 0.10 : 0.05;
+  const defaultVolume = isMobile ? 0.20 : 0.20;
 
   return {
     name: randomName,
@@ -52,12 +52,12 @@ const initialSettings = {
   furiganaMode: true,
   difficulty: 'easy',
   backgroundMusic: true,
-  musicVolume: isMobileDevice ? 0.10 : 0.05,
+  musicVolume: isMobileDevice ? 0.20 : 0.20,
   soundEffects: true,
   theme: 'light',
   dailyGoal: 15,
   languagePreference: 'en',
-  cursorType: 'traditional'
+  cursorType: 'sakura'
 };
 
 export const ProfileProvider = ({ children }) => {

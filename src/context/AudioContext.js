@@ -21,8 +21,7 @@ export const AudioProvider = ({ children }) => {
   const [musicVolume, setMusicVolume] = useState(() => {
     const saved = localStorage.getItem('musicVolume');
     if (saved !== null) return parseFloat(saved);
-    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-    return isMobile ? 0.10 : 0.05;
+    return 0.20;
   });
   const [isInitialized, setIsInitialized] = useState(false);
   const [voices, setVoices] = useState([]);
@@ -30,11 +29,11 @@ export const AudioProvider = ({ children }) => {
   const [currentTrackIndex, setCurrentTrackIndex] = useState(() => Math.floor(Math.random() * 5));
 
   const BACKGROUND_TRACKS = [
-    'https://cdn.pixabay.com/audio/2023/03/26/audio_1d5c4319b7.mp3',
-    'https://cdn.pixabay.com/audio/2025/03/16/audio_5b558f8091.mp3',
-    'https://cdn.pixabay.com/audio/2025/06/13/audio_06dd0dd326.mp3',
-    'https://cdn.pixabay.com/audio/2024/11/15/audio_157298f798.mp3',
-    'https://cdn.pixabay.com/audio/2024/03/18/audio_f9f5488280.mp3'
+    { title: "Sakura Memories", url: 'https://cdn.pixabay.com/audio/2023/03/26/audio_1d5c4319b7.mp3' },
+    { title: "Tokyo Night", url: 'https://cdn.pixabay.com/audio/2025/03/16/audio_5b558f8091.mp3' },
+    { title: "Zen Garden", url: 'https://cdn.pixabay.com/audio/2025/06/13/audio_06dd0dd326.mp3' },
+    { title: "Rising Sun", url: 'https://cdn.pixabay.com/audio/2024/11/15/audio_157298f798.mp3' },
+    { title: "Mountain Peak", url: 'https://cdn.pixabay.com/audio/2024/03/18/audio_f9f5488280.mp3' }
   ];
 
   useEffect(() => {
@@ -61,7 +60,11 @@ export const AudioProvider = ({ children }) => {
   }, []);
 
   useEffect(() => {
-    const audio = new Audio(BACKGROUND_TRACKS[currentTrackIndex]);
+    if (musicRef.current) {
+      musicRef.current.pause();
+      musicRef.current.src = '';
+    }
+    const audio = new Audio(BACKGROUND_TRACKS[currentTrackIndex].url);
     audio.volume = musicVolume;
     const handleEnded = () => setCurrentTrackIndex(prev => (prev + 1) % BACKGROUND_TRACKS.length);
     audio.addEventListener('ended', handleEnded);
@@ -98,6 +101,14 @@ export const AudioProvider = ({ children }) => {
       setMusicPlaying(false);
     }
   }, [musicPlaying]);
+
+  const nextTrack = useCallback(() => {
+    setCurrentTrackIndex(prev => (prev + 1) % BACKGROUND_TRACKS.length);
+  }, []);
+
+  const prevTrack = useCallback(() => {
+    setCurrentTrackIndex(prev => (prev - 1 + BACKGROUND_TRACKS.length) % BACKGROUND_TRACKS.length);
+  }, []);
 
   const initializeAudio = useCallback(async () => {
     if (!isInitialized || (audioContextRef.current && audioContextRef.current.state === 'suspended')) {
@@ -215,7 +226,10 @@ export const AudioProvider = ({ children }) => {
 
   const value = {
     isEnabled, setIsEnabled, toggleSound, isPlaying, speak, stop, voices, initializeAudio, isInitialized, playSound,
-    musicEnabled, musicPlaying, toggleMusic, musicVolume, setMusicVolume, startMusic, stopMusic
+    musicEnabled, musicPlaying, toggleMusic, musicVolume, setMusicVolume, startMusic, stopMusic,
+    currentTrack: BACKGROUND_TRACKS[currentTrackIndex],
+    nextTrack, prevTrack,
+    allTracks: BACKGROUND_TRACKS
   };
 
   return (

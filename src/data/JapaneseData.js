@@ -1,622 +1,51 @@
-// This file contains all learning content for offline/client-side use
-import { MASSIVE_N5_VOCAB } from './MassiveN5Vocab';
-import { MASSIVE_N4_VOCAB } from './MassiveN4Vocab';
-import { MASSIVE_SENTENCES } from './MassiveSentences';
+// This file aggregates all Japanese learning content from specialized modules.
+// It serves as the unified data layer for all app components.
+
+import {
+  HIRAGANA as RAW_HIRAGANA,
+  KATAKANA as RAW_KATAKANA,
+  N5_KANJI as RAW_N5_KANJI,
+  N4_KANJI as RAW_N4_KANJI,
+  N5_GRAMMAR as RAW_N5_GRAMMAR,
+  N5_VOCABULARY as RAW_N5_VOCABULARY
+} from './CompleteJapaneseContent';
+
+import { ZEN_LEXICON as RAW_ZEN_LEXICON } from './ZenLexiconData';
+import { ZEN_GRAMMAR as RAW_ZEN_GRAMMAR } from './ZenGrammarData';
+import { MASSIVE_SENTENCES as RAW_MASSIVE_SENTENCES } from './MassiveSentences';
 import { N5_KANJI_MASSIVE, N4_KANJI_MASSIVE } from './MassiveKanji';
+import { MASSIVE_STORIES as RAW_MASSIVE_STORIES } from './MassiveStories';
 
-// Compatibility Layer
-export const N5_VOCABULARY = MASSIVE_N5_VOCAB.map(v => ({
-  ...v,
-  word: v.kanji || v.kana,
-  reading: v.kana,
-  meaning: v.en,
-  char: v.kanji || v.kana, // Compatibility with components expecting char
-  en: v.en
-}));
+// ==================== INITIALIZATION & CORE STATICS ====================
 
-export const N4_VOCABULARY = MASSIVE_N4_VOCAB.map(v => ({
-  ...v,
-  word: v.kanji || v.kana,
-  reading: v.kana,
-  meaning: v.en,
-  char: v.kanji || v.kana,
-  en: v.en
-}));
+/**
+ * Robustly flattens grammar levels into a unified array.
+ */
+function getCombinedGrammar(source) {
+  if (!source) return [];
+  const result = [];
+  try {
+    ['N5', 'N4', 'N3', 'N2', 'N1'].forEach(lvl => {
+      if (source[lvl] && Array.isArray(source[lvl])) {
+        source[lvl].forEach(item => {
+          result.push({ ...item, level: item.level || lvl });
+        });
+      }
+    });
 
-export { MASSIVE_N5_VOCAB, MASSIVE_N4_VOCAB, MASSIVE_SENTENCES };
+    Object.entries(source).forEach(([key, val]) => {
+      if (!['N5', 'N4', 'N3', 'N2', 'N1'].includes(key) && Array.isArray(val)) {
+        val.forEach(item => result.push({ ...item, level: item.level || key }));
+      }
+    });
+  } catch (e) {
+    console.error("Critical: Failed to flatten grammar data.", e);
+  }
+  return result;
+}
 
-// ==================== HIRAGANA ====================
-export const HIRAGANA = [
-  // Basic vowels
-  { char: 'あ', romaji: 'a', row: 'vowel', audio: 'あ' },
-  { char: 'い', romaji: 'i', row: 'vowel', audio: 'い' },
-  { char: 'う', romaji: 'u', row: 'vowel', audio: 'う' },
-  { char: 'え', romaji: 'e', row: 'vowel', audio: 'え' },
-  { char: 'お', romaji: 'o', row: 'vowel', audio: 'お' },
-  // K row
-  { char: 'か', romaji: 'ka', row: 'k', audio: 'か' },
-  { char: 'き', romaji: 'ki', row: 'k', audio: 'き' },
-  { char: 'く', romaji: 'ku', row: 'k', audio: 'く' },
-  { char: 'け', romaji: 'ke', row: 'k', audio: 'け' },
-  { char: 'こ', romaji: 'ko', row: 'k', audio: 'こ' },
-  // S row
-  { char: 'さ', romaji: 'sa', row: 's', audio: 'さ' },
-  { char: 'し', romaji: 'shi', row: 's', audio: 'し' },
-  { char: 'す', romaji: 'su', row: 's', audio: 'す' },
-  { char: 'せ', romaji: 'se', row: 's', audio: 'せ' },
-  { char: 'そ', romaji: 'so', row: 's', audio: 'そ' },
-  // T row
-  { char: 'た', romaji: 'ta', row: 't', audio: 'た' },
-  { char: 'ち', romaji: 'chi', row: 't', audio: 'ち' },
-  { char: 'つ', romaji: 'tsu', row: 't', audio: 'つ' },
-  { char: 'て', romaji: 'te', row: 't', audio: 'て' },
-  { char: 'と', romaji: 'to', row: 't', audio: 'と' },
-  // N row
-  { char: 'な', romaji: 'na', row: 'n', audio: 'な' },
-  { char: 'に', romaji: 'ni', row: 'n', audio: 'に' },
-  { char: 'ぬ', romaji: 'nu', row: 'n', audio: 'ぬ' },
-  { char: 'ね', romaji: 'ne', row: 'n', audio: 'ね' },
-  { char: 'の', romaji: 'no', row: 'n', audio: 'の' },
-  // H row
-  { char: 'は', romaji: 'ha', row: 'h', audio: 'は' },
-  { char: 'ひ', romaji: 'hi', row: 'h', audio: 'ひ' },
-  { char: 'ふ', romaji: 'fu', row: 'h', audio: 'ふ' },
-  { char: 'へ', romaji: 'he', row: 'h', audio: 'へ' },
-  { char: 'ほ', romaji: 'ho', row: 'h', audio: 'ほ' },
-  // M row
-  { char: 'ま', romaji: 'ma', row: 'm', audio: 'ま' },
-  { char: 'み', romaji: 'mi', row: 'm', audio: 'み' },
-  { char: 'む', romaji: 'mu', row: 'm', audio: 'む' },
-  { char: 'め', romaji: 'me', row: 'm', audio: 'め' },
-  { char: 'も', romaji: 'mo', row: 'm', audio: 'も' },
-  // Y row
-  { char: 'や', romaji: 'ya', row: 'y', audio: 'や' },
-  { char: 'ゆ', romaji: 'yu', row: 'y', audio: 'ゆ' },
-  { char: 'よ', romaji: 'yo', row: 'y', audio: 'よ' },
-  // R row
-  { char: 'ら', romaji: 'ra', row: 'r', audio: 'ら' },
-  { char: 'り', romaji: 'ri', row: 'r', audio: 'り' },
-  { char: 'る', romaji: 'ru', row: 'r', audio: 'る' },
-  { char: 'れ', romaji: 're', row: 'r', audio: 'れ' },
-  { char: 'ろ', romaji: 'ro', row: 'r', audio: 'ろ' },
-  // W row
-  { char: 'わ', romaji: 'wa', row: 'w', audio: 'わ' },
-  { char: 'を', romaji: 'wo', row: 'w', audio: 'を' },
-  { char: 'ん', romaji: 'n', row: 'w', audio: 'ん' },
-  // Dakuten (voiced)
-  { char: 'が', romaji: 'ga', row: 'g', audio: 'が' },
-  { char: 'ぎ', romaji: 'gi', row: 'g', audio: 'ぎ' },
-  { char: 'ぐ', romaji: 'gu', row: 'g', audio: 'ぐ' },
-  { char: 'げ', romaji: 'ge', row: 'g', audio: 'げ' },
-  { char: 'ご', romaji: 'go', row: 'g', audio: 'ご' },
-  { char: 'ざ', romaji: 'za', row: 'z', audio: 'ざ' },
-  { char: 'じ', romaji: 'ji', row: 'z', audio: 'じ' },
-  { char: 'ず', romaji: 'zu', row: 'z', audio: 'ず' },
-  { char: 'ぜ', romaji: 'ze', row: 'z', audio: 'ぜ' },
-  { char: 'ぞ', romaji: 'zo', row: 'z', audio: 'ぞ' },
-  { char: 'だ', romaji: 'da', row: 'd', audio: 'だ' },
-  { char: 'ぢ', romaji: 'ji', row: 'd', audio: 'ぢ' },
-  { char: 'づ', romaji: 'zu', row: 'd', audio: 'づ' },
-  { char: 'で', romaji: 'de', row: 'd', audio: 'で' },
-  { char: 'ど', romaji: 'do', row: 'd', audio: 'ど' },
-  { char: 'ば', romaji: 'ba', row: 'b', audio: 'ば' },
-  { char: 'び', romaji: 'bi', row: 'b', audio: 'び' },
-  { char: 'ぶ', romaji: 'bu', row: 'b', audio: 'ぶ' },
-  { char: 'べ', romaji: 'be', row: 'b', audio: 'べ' },
-  { char: 'ぼ', romaji: 'bo', row: 'b', audio: 'ぼ' },
-  // Handakuten
-  { char: 'ぱ', romaji: 'pa', row: 'p', audio: 'ぱ' },
-  { char: 'ぴ', romaji: 'pi', row: 'p', audio: 'ぴ' },
-  { char: 'ぷ', romaji: 'pu', row: 'p', audio: 'ぷ' },
-  { char: 'ぺ', romaji: 'pe', row: 'p', audio: 'ぺ' },
-  { char: 'ぽ', romaji: 'po', row: 'p', audio: 'ぽ' },
-];
+// ==================== RESTORED CONSTANTS ====================
 
-// ==================== KATAKANA ====================
-export const KATAKANA = [
-  // Basic vowels
-  { char: 'ア', romaji: 'a', row: 'vowel', audio: 'ア' },
-  { char: 'イ', romaji: 'i', row: 'vowel', audio: 'イ' },
-  { char: 'ウ', romaji: 'u', row: 'vowel', audio: 'ウ' },
-  { char: 'エ', romaji: 'e', row: 'vowel', audio: 'エ' },
-  { char: 'オ', romaji: 'o', row: 'vowel', audio: 'オ' },
-  // K row
-  { char: 'カ', romaji: 'ka', row: 'k', audio: 'カ' },
-  { char: 'キ', romaji: 'ki', row: 'k', audio: 'キ' },
-  { char: 'ク', romaji: 'ku', row: 'k', audio: 'ク' },
-  { char: 'ケ', romaji: 'ke', row: 'k', audio: 'ケ' },
-  { char: 'コ', romaji: 'ko', row: 'k', audio: 'コ' },
-  // S row
-  { char: 'サ', romaji: 'sa', row: 's', audio: 'サ' },
-  { char: 'シ', romaji: 'shi', row: 's', audio: 'シ' },
-  { char: 'ス', romaji: 'su', row: 's', audio: 'ス' },
-  { char: 'セ', romaji: 'se', row: 's', audio: 'セ' },
-  { char: 'ソ', romaji: 'so', row: 's', audio: 'ソ' },
-  // T row
-  { char: 'タ', romaji: 'ta', row: 't', audio: 'タ' },
-  { char: 'チ', romaji: 'chi', row: 't', audio: 'チ' },
-  { char: 'ツ', romaji: 'tsu', row: 't', audio: 'ツ' },
-  { char: 'テ', romaji: 'te', row: 't', audio: 'テ' },
-  { char: 'ト', romaji: 'to', row: 't', audio: 'ト' },
-  // N row
-  { char: 'ナ', romaji: 'na', row: 'n', audio: 'ナ' },
-  { char: 'ニ', romaji: 'ni', row: 'n', audio: 'ニ' },
-  { char: 'ヌ', romaji: 'nu', row: 'n', audio: 'ヌ' },
-  { char: 'ネ', romaji: 'ne', row: 'n', audio: 'ネ' },
-  { char: 'ノ', romaji: 'no', row: 'n', audio: 'ノ' },
-  // H row
-  { char: 'ハ', romaji: 'ha', row: 'h', audio: 'ハ' },
-  { char: 'ヒ', romaji: 'hi', row: 'h', audio: 'ヒ' },
-  { char: 'フ', romaji: 'fu', row: 'h', audio: 'フ' },
-  { char: 'ヘ', romaji: 'he', row: 'h', audio: 'ヘ' },
-  { char: 'ホ', romaji: 'ho', row: 'h', audio: 'ホ' },
-  // M row
-  { char: 'マ', romaji: 'ma', row: 'm', audio: 'マ' },
-  { char: 'ミ', romaji: 'mi', row: 'm', audio: 'ミ' },
-  { char: 'ム', romaji: 'mu', row: 'm', audio: 'ム' },
-  { char: 'メ', romaji: 'me', row: 'm', audio: 'メ' },
-  { char: 'モ', romaji: 'mo', row: 'm', audio: 'モ' },
-  // Y row
-  { char: 'ヤ', romaji: 'ya', row: 'y', audio: 'ヤ' },
-  { char: 'ユ', romaji: 'yu', row: 'y', audio: 'ユ' },
-  { char: 'ヨ', romaji: 'yo', row: 'y', audio: 'ヨ' },
-  // R row
-  { char: 'ラ', romaji: 'ra', row: 'r', audio: 'ラ' },
-  { char: 'リ', romaji: 'ri', row: 'r', audio: 'リ' },
-  { char: 'ル', romaji: 'ru', row: 'r', audio: 'ル' },
-  { char: 'レ', romaji: 're', row: 'r', audio: 'レ' },
-  { char: 'ロ', romaji: 'ro', row: 'r', audio: 'ロ' },
-  // W row
-  { char: 'ワ', romaji: 'wa', row: 'w', audio: 'ワ' },
-  { char: 'ヲ', romaji: 'wo', row: 'w', audio: 'ヲ' },
-  { char: 'ン', romaji: 'n', row: 'w', audio: 'ン' },
-  // Dakuten
-  { char: 'ガ', romaji: 'ga', row: 'g', audio: 'ガ' },
-  { char: 'ギ', romaji: 'gi', row: 'g', audio: 'ギ' },
-  { char: 'グ', romaji: 'gu', row: 'g', audio: 'グ' },
-  { char: 'ゲ', romaji: 'ge', row: 'g', audio: 'ゲ' },
-  { char: 'ゴ', romaji: 'go', row: 'g', audio: 'ゴ' },
-  { char: 'ザ', romaji: 'za', row: 'z', audio: 'ザ' },
-  { char: 'ジ', romaji: 'ji', row: 'z', audio: 'ジ' },
-  { char: 'ズ', romaji: 'zu', row: 'z', audio: 'ズ' },
-  { char: 'ゼ', romaji: 'ze', row: 'z', audio: 'ゼ' },
-  { char: 'ゾ', romaji: 'zo', row: 'z', audio: 'ゾ' },
-  { char: 'ダ', romaji: 'da', row: 'd', audio: 'ダ' },
-  { char: 'ヂ', romaji: 'ji', row: 'd', audio: 'ヂ' },
-  { char: 'ヅ', romaji: 'zu', row: 'd', audio: 'ヅ' },
-  { char: 'デ', romaji: 'de', row: 'd', audio: 'デ' },
-  { char: 'ド', romaji: 'do', row: 'd', audio: 'ド' },
-  { char: 'バ', romaji: 'ba', row: 'b', audio: 'バ' },
-  { char: 'ビ', romaji: 'bi', row: 'b', audio: 'ビ' },
-  { char: 'ブ', romaji: 'bu', row: 'b', audio: 'ブ' },
-  { char: 'ベ', romaji: 'be', row: 'b', audio: 'ベ' },
-  { char: 'ボ', romaji: 'bo', row: 'b', audio: 'ボ' },
-  { char: 'パ', romaji: 'pa', row: 'p', audio: 'パ' },
-  { char: 'ピ', romaji: 'pi', row: 'p', audio: 'ピ' },
-  { char: 'プ', romaji: 'pu', row: 'p', audio: 'プ' },
-  { char: 'ペ', romaji: 'pe', row: 'p', audio: 'ペ' },
-  { char: 'ポ', romaji: 'po', row: 'p', audio: 'ポ' },
-];
-
-// ==================== N5 KANJI ====================
-export const N5_KANJI = N5_KANJI_MASSIVE || [];
-
-// ==================== N4 KANJI ====================
-export const N4_KANJI = N4_KANJI_MASSIVE || [];
-
-// ==================== N5 GRAMMAR ====================
-export const N5_GRAMMAR = [
-  { pattern: 'です', meaning: 'is, am, are (polite)', bn: 'হয় (বিনম্র)', explanation: 'Polite copula used at the end of sentences', examples: [{ jp: 'これは本です', romaji: 'kore wa hon desu', en: 'This is a book' }] },
-  { pattern: 'ます', meaning: 'Polite verb ending (present/future)', bn: 'বর্তমান/ভবিষ্যৎ বিনম্র রূপ', explanation: 'Polite form of verbs for present/future tense', examples: [{ jp: '食べます', romaji: 'tabemasu', en: 'I eat / will eat' }] },
-  { pattern: 'ません', meaning: 'Polite negative (present/future)', bn: 'না-বোধক বিনম্র রূপ', explanation: 'Negative form of polite verbs', examples: [{ jp: '食べません', romaji: 'tabemasen', en: 'I don\'t eat / won\'t eat' }] },
-  { pattern: 'ました', meaning: 'Polite past tense', bn: 'অতীত বিনম্র রূপ', explanation: 'Past tense form of polite verbs', examples: [{ jp: '食べました', romaji: 'tabemashita', en: 'I ate' }] },
-  { pattern: 'ませんでした', meaning: 'Polite negative past', bn: 'অতীত না-বোধক বিনম্র রূপ', explanation: 'Past negative form of polite verbs', examples: [{ jp: '食べませんでした', romaji: 'tabemasen deshita', en: 'I didn\'t eat' }] },
-  { pattern: 'は〜です', meaning: 'Topic marker + copula', bn: 'বিষয় নির্দেশক + হয়', explanation: 'は marks the topic of the sentence', examples: [{ jp: '私は学生です', romaji: 'watashi wa gakusei desu', en: 'I am a student' }] },
-  { pattern: 'を', meaning: 'Object marker', bn: 'কর্ম কারক বিভক্তি', explanation: 'Marks the direct object of a verb', examples: [{ jp: '本を読む', romaji: 'hon wo yomu', en: 'Read a book' }] },
-  { pattern: 'に', meaning: 'Direction/Time/Location marker', bn: 'দিক/সময়/স্থান নির্দেশক', explanation: 'Indicates direction, time, or location', examples: [{ jp: '学校に行く', romaji: 'gakou ni iku', en: 'Go to school' }] },
-  { pattern: 'で', meaning: 'Location/Means marker', bn: 'স্থান/উপকরণ নির্দেশক', explanation: 'Where action takes place or by what means', examples: [{ jp: '電車で行く', romaji: 'densha de iku', en: 'Go by train' }] },
-  { pattern: 'が', meaning: 'Subject marker', bn: 'কর্তা কারক বিভক্তি', explanation: 'Marks the subject or emphasizes new information', examples: [{ jp: '猫がいます', romaji: 'neko ga imasu', en: 'There is a cat' }] },
-  { pattern: 'も', meaning: 'Also, too', bn: 'ও / আরও', explanation: 'Indicates addition or inclusion', examples: [{ jp: '私も学生です', romaji: 'watashi mo gakusei desu', en: 'I am also a student' }] },
-  { pattern: 'と', meaning: 'And, with', bn: 'এবং / সাথে', explanation: 'Connects nouns or indicates accompaniment', examples: [{ jp: '友達と行く', romaji: 'tomodachi to iku', en: 'Go with a friend' }] },
-  { pattern: 'や', meaning: 'And (non-exhaustive list)', bn: 'এবং (অসম্পূর্ণ তালিকা)', explanation: 'Lists items implying there are more', examples: [{ jp: 'りんごやバナナ', romaji: 'ringo ya banana', en: 'Apples and bananas (etc.)' }] },
-  { pattern: 'か', meaning: 'Question marker', bn: 'প্রশ্নবোধক চিহ্ন', explanation: 'Turns a statement into a question', examples: [{ jp: 'これは何ですか', romaji: 'kore wa nan desu ka', en: 'What is this?' }] },
-  { pattern: 'から', meaning: 'From, because', bn: 'থেকে / কারণ', explanation: 'Starting point or reason', examples: [{ jp: '駅から歩く', romaji: 'eki kara aruku', en: 'Walk from the station' }] },
-  { pattern: 'まで', meaning: 'Until, to', bn: 'পর্যন্ত / অবধি', explanation: 'End point or limit', examples: [{ jp: '5時まで働く', romaji: 'goji made hataraku', en: 'Work until 5 o\'clock' }] },
-  { pattern: '〜たい', meaning: 'Want to do', bn: 'করতে চাই', explanation: 'Expresses desire to do something', examples: [{ jp: '食べたい', romaji: 'tabetai', en: 'I want to eat' }] },
-  { pattern: '〜てください', meaning: 'Please do', bn: 'অনুগ্রহ করে করুন', explanation: 'Polite request form', examples: [{ jp: '見てください', romaji: 'mite kudasai', en: 'Please look' }] },
-  { pattern: '〜てもいいですか', meaning: 'May I?', bn: 'আমি কি করতে পারি?', explanation: 'Asking for permission', examples: [{ jp: '写真を撮ってもいいですか', romaji: 'shashin wo totte mo ii desu ka', en: 'May I take a photo?' }] },
-  { pattern: '〜てはいけません', meaning: 'Must not', bn: 'করা নিষেধ', explanation: 'Prohibition', examples: [{ jp: 'ここで写真を撮ってはいけません', romaji: 'koko de shashin wo totte wa ikemasen', en: 'You must not take photos here' }] },
-  { pattern: '〜ましょう', meaning: 'Let\'s do', bn: 'চলুন করি', explanation: 'Suggestion to do together', examples: [{ jp: '食べましょう', romaji: 'tabemashou', en: 'Let\'s eat' }] },
-  { pattern: '〜ないでください', meaning: 'Please don\'t', bn: 'দয়া করে করবেন না', explanation: 'Polite negative request', examples: [{ jp: '触らないでください', romaji: 'sawaranaide kudasai', en: 'Please don\'t touch' }] },
-  { pattern: '〜ている', meaning: 'Continuous action / state', bn: 'চলমান কাজ / অবস্থা', explanation: 'Ongoing action or resulting state', examples: [{ jp: '食べている', romaji: 'tabete iru', en: 'I am eating' }] },
-  { pattern: '〜た', meaning: 'Past tense (plain)', bn: 'অতীত কাল (সাধারণ)', explanation: 'Casual past tense', examples: [{ jp: '食べた', romaji: 'tabeta', en: 'I ate' }] },
-  { pattern: '〜ない', meaning: 'Negative (plain)', bn: 'না-বোধক (সাধারণ)', explanation: 'Casual negative form', examples: [{ jp: '食べない', romaji: 'tabenai', en: 'I don\'t eat' }] },
-  { pattern: '〜から', meaning: 'From', bn: 'থেকে', explanation: 'Starting point', examples: [{ jp: 'あしたから', romaji: 'ashita kara', en: 'from tomorrow' }] },
-  { pattern: '〜まで', meaning: 'Until/To', bn: 'পর্যন্ত', explanation: 'End point', examples: [{ jp: '5じまで', romaji: 'go-ji made', en: 'until 5 o\'clock' }] },
-  { pattern: '〜たい', meaning: 'Want to do', bn: 'করতে চাই', explanation: 'Expresses desire', examples: [{ jp: 'のみたい', romaji: 'nomitai', en: 'want to drink' }] },
-  { pattern: '〜てください', meaning: 'Please do', bn: 'অনুগ্রহ করে করুন', explanation: 'Polite request', examples: [{ jp: 'みてください', romaji: 'mite kudasai', en: 'please look' }] },
-  { pattern: '〜てもいいです', meaning: 'May do / You can', bn: 'করতে পারেন', explanation: 'Giving permission', examples: [{ jp: 'はいってもいいです', romaji: 'haitte mo ii desu', en: 'you may enter' }] },
-  { pattern: '〜てはいけません', meaning: 'Must not do', bn: 'করা নিষেধ', explanation: 'Prohibition', examples: [{ jp: 'たべてはいけません', romaji: 'tabete wa ikemasen', en: 'must not eat' }] },
-  { pattern: '〜ましょう', meaning: 'Let\'s do', bn: 'চলুন করি', explanation: 'Suggestion / invitation', examples: [{ jp: 'いきましょう', romaji: 'ikimashou', en: 'let\'s go' }] },
-  { pattern: '〜ましょうか', meaning: 'Shall I? / Shall we?', bn: 'করব কি?', explanation: 'Offering help or suggestion', examples: [{ jp: 'てつだいましょうか', romaji: 'tetsudaimashou ka', en: 'shall I help?' }] },
-  { pattern: '〜てください', meaning: 'Please do', bn: 'দয়া করে করুন', explanation: 'Polite request', examples: [{ jp: 'まってください', romaji: 'matte kudasai', en: 'please wait' }] },
-  { id: 'n5g20', level: 'N5', pattern: '〜がほしい', meaning: 'to want something', bn: 'চাই (কিছু)', explanation: 'Expressing desire for an object', examples: [{ jp: '車がほしいです', romaji: 'Kuruma ga hoshii desu', en: 'I want a car' }] },
-  { id: 'n5g21', level: 'N5', pattern: '〜をください', meaning: 'please give me...', bn: 'দয়া করে দিন', explanation: 'Requesting an object', examples: [{ jp: '水をください', romaji: 'Mizu wo kudasai', en: 'Please give me some water' }] },
-  { id: 'n5g22', level: 'N5', pattern: '〜たいです', meaning: 'want to do...', bn: 'করতে চাই', explanation: 'Expressing desire for an action', examples: [{ jp: '食べたいです', romaji: 'Tabetai desu', en: 'I want to eat' }] },
-  { id: 'n5g24', level: 'N5', pattern: '〜てください', meaning: 'please do...', bn: 'দয়া করে করুন', explanation: 'Polite request', examples: [{ jp: '待ってください', romaji: 'matte kudasai', en: 'Please wait' }] },
-  { id: 'n5g25', level: 'N5', pattern: '〜てはいけません', meaning: 'must not...', bn: 'করা নিষেধ', explanation: 'Prohibition', examples: [{ jp: '入ってはいけません', romaji: 'haitte wa ikemasen', en: 'You must not enter' }] },
-  { id: 'n5g26', level: 'N5', pattern: '〜てもいいです', meaning: 'may / can...', bn: 'করতে পারেন', explanation: 'Permission', examples: [{ jp: '座ってもいいです', romaji: 'suwatte mo ii desu', en: 'You may sit down' }] },
-  { id: 'n5g27', level: 'N5', pattern: '〜なければなりません', meaning: 'must do...', bn: 'করতেই হবে', explanation: 'Obligation', examples: [{ jp: '勉強しなければなりません', romaji: 'benkyou shinakereba narimasen', en: 'I must study' }] },
-  { id: 'n5g28', level: 'N5', pattern: '〜なくてもいいです', meaning: 'don\'t have to...', bn: 'না করলেও চলবে', explanation: 'Lack of obligation', examples: [{ jp: '来なくてもいいです', romaji: 'konakute mo ii desu', en: 'You don\'t have to come' }] },
-  { id: 'n5g29', level: 'N5', pattern: '〜ができる', meaning: 'can do...', bn: 'পারি (করতে)', explanation: 'Ability/potential', examples: [{ jp: '泳ぐことができます', romaji: 'oyogu koto ga dekimasu', en: 'I can swim' }] },
-  { id: 'n5g30', level: 'N5', pattern: '〜たことがある', meaning: 'have done before', bn: 'আগে করেছি', explanation: 'Past experience', examples: [{ jp: '行ったことがあります', romaji: 'itta koto ga arimasu', en: 'I have been (there) before' }] },
-  { id: 'n5g31', level: 'N5', pattern: '〜たり〜たりする', meaning: 'do things like ... and ...', bn: 'মাঝে মাঝে ... মাঝে মাঝে ...', explanation: 'Listing non-exhaustive actions', examples: [{ jp: '本を読んだりテレビを見たりします', romaji: 'Hon wo yondari terebi wo mitari shimasu', en: 'I do things like read books and watch TV' }] },
-  { id: 'n5g32', level: 'N5', pattern: '〜すぎる', meaning: 'too much...', bn: 'খুব বেশি', explanation: 'Excessive degree', examples: [{ jp: '食べすぎました', romaji: 'tabesugimashita', en: 'I ate too much' }] },
-  { id: 'n5g33', level: 'N5', pattern: '〜やすい', meaning: 'easy to...', bn: 'সহজ', explanation: 'Facilitating an action', examples: [{ jp: '読みやすいです', romaji: 'yomiyasui desu', en: 'It is easy to read' }] },
-  { id: 'n5g34', level: 'N5', pattern: '〜にくい', meaning: 'hard to...', bn: 'কঠিন', explanation: 'Difficulty in an action', examples: [{ jp: '使いにくいです', romaji: 'tsukainikui desu', en: 'It is hard to use' }] },
-  { id: 'n5g35', level: 'N5', pattern: '〜ほうがいい', meaning: 'had better...', bn: 'করা ভালো', explanation: 'Advice/recommendation', examples: [{ jp: '早く寝たほうがいいです', romaji: 'hayaku neta hou ga ii desu', en: 'You had better go to sleep early' }] },
-  { id: 'n5g36', level: 'N5', pattern: '〜でしょう', meaning: 'probably...', bn: 'হয়তো (বিনম্র)', explanation: 'Conjecture/probability', examples: [{ jp: '雨が降るでしょう', romaji: 'ame ga furu deshou', en: 'It will probably rain' }] },
-  { id: 'n5g37', level: 'N5', pattern: '〜かもしれない', meaning: 'might / maybe...', bn: 'হতে পারে', explanation: 'Low probability', examples: [{ jp: '病気かもしれません', romaji: 'byouki kamoshiremasen', en: 'It might be an illness' }] },
-  { id: 'n5g38', level: 'N5', pattern: '〜そうです', meaning: 'looks like... / I heard...', bn: 'মনে হচ্ছে / শুনেছি', explanation: 'Appearance or hearsay', examples: [{ jp: '美味しそうです', romaji: 'oishisou desu', en: 'It looks delicious' }] },
-  { id: 'n5g39', level: 'N5', pattern: '〜によると', meaning: 'according to...', bn: 'অনুসারে (তথ্যসূত্র)', explanation: 'Source of information', examples: [{ jp: '天気予報によると', romaji: 'tenki yohou ni yoru to', en: 'According to the weather forecast' }] },
-  { id: 'n5g40', level: 'N5', pattern: '〜つもりです', meaning: 'plan to...', bn: 'পরিকল্পনা আছে', explanation: 'Intention', examples: [{ jp: '日本へ行くつもりです', romaji: 'Nihon he iku tsumori desu', en: 'I plan to go to Japan' }] },
-  { id: 'n5g41', level: 'N5', pattern: '〜予定です', meaning: 'scheduled to...', bn: 'পূর্বনির্ধারিত আছে', explanation: 'Formal schedule', examples: [{ jp: '三時に会う予定です', romaji: 'sanji ni au yotei desu', en: 'Scheduled to meet at three' }] },
-  { id: 'n5g42', level: 'N5', pattern: '〜ために', meaning: 'for the sake of / in order to', bn: 'জন্য / উদ্দেশ্যে', explanation: 'Purpose', examples: [{ jp: '健康のために', romaji: 'kenkou no tame ni', en: 'for the sake of health' }] },
-  { id: 'n5g43', level: 'N5', pattern: '〜ように', meaning: 'in order to / so that...', bn: 'যাতে / উদ্দেশ্যে', explanation: 'Goal or state', examples: [{ jp: '忘れないように', romaji: 'wasurenai you ni', en: 'so that I don\'t forget' }] },
-  { id: 'n5g44', level: 'N5', pattern: '〜し、〜し', meaning: '... and ..., and what\'s more', bn: '...ও ...ও', explanation: 'Listing reasons or qualities', examples: [{ jp: '安いし、美味しいです', romaji: 'yasui shi, oishii desu', en: 'It is cheap, and delicious too' }] },
-  { id: 'n5g46', level: 'N5', pattern: '〜てくる', meaning: 'to come to be / start to', bn: 'শুরু হওয়া / হয়ে আসা', explanation: 'Process starting or moving towards speaker', examples: [{ jp: '太ってきました', romaji: 'futotte kimashita', en: 'started to get fat' }] },
-  { id: 'n5g47', level: 'N5', pattern: '〜ていく', meaning: 'to go on ...ing / continue to', bn: 'চলতে থাকা', explanation: 'Action continuing or moving away', examples: [{ jp: '寒くなっていきます', romaji: 'samuku natte ikimasu', en: 'will continue to get cold' }] },
-  { id: 'n5g48', level: 'N5', pattern: '〜たら', meaning: 'if / when', bn: 'যদি / যখন', explanation: 'Conditional', examples: [{ jp: '雨が降ったら', romaji: 'ame ga futtara', en: 'if it rains' }] },
-  { id: 'n5g49', level: 'N5', pattern: '〜なら', meaning: 'if it is ... / as for ...', bn: 'যদি হয়', explanation: 'Topic-based conditional', examples: [{ jp: '日本人なら', romaji: 'Nihonjin nara', en: 'if you are Japanese' }] },
-  { id: 'n5g50', level: 'N5', pattern: '〜ば', meaning: 'if (formal conditional)', bn: 'যদি (আনুষ্ঠানিক)', explanation: 'Condition necessary for result', examples: [{ jp: '安ければ買います', romaji: 'yasukereba kaimasu', en: 'If it is cheap, I will buy it' }] },
-  { pattern: '〜ながら', meaning: 'While doing', bn: 'করার সময়', explanation: 'Concurrent actions', examples: [{ jp: 'のみながら', romaji: 'nominagara', en: 'while drinking' }] },
-  { pattern: '〜のがきです', meaning: 'Like doing', bn: 'করতে পছন্দ করি', explanation: 'Expressing likes for an action', examples: [{ jp: 'うたうのがきです', romaji: 'utau no ga suki desu', en: 'I like singing' }] },
-  { pattern: '〜のがじょうずです', meaning: 'Good at doing', bn: 'করতে দক্ষ', explanation: 'Expressing skill', examples: [{ jp: 'かくのがじょうずです', romaji: 'kaku no ga jouzu desu', en: 'is good at writing' }] },
-  { pattern: '〜といったことがあります', meaning: 'Have done before', bn: 'আগে করেছি', explanation: 'Experience', examples: [{ jp: 'いったことがあります', romaji: 'itta koto ga arimasu', en: 'have been before' }] },
-  { pattern: '〜つもりです', meaning: 'Plan to do', bn: 'করার পরিকল্পনা আছে', explanation: 'Intention', examples: [{ jp: 'かうつもりです', romaji: 'kau tsumori desu', en: 'plan to buy' }] },
-  { pattern: '〜ほうがいいです', meaning: 'Should do', bn: 'করা ভালো', explanation: 'Advice', examples: [{ jp: 'ねたほうがいいです', romaji: 'neta hou ga ii desu', en: 'should sleep' }] },
-  { pattern: '〜まえに', meaning: 'Before doing', bn: 'করার আগে', explanation: 'Time sequence', examples: [{ jp: 'ねるまえに', romaji: 'neru mae ni', en: 'before sleeping' }] },
-  { pattern: '〜あとで', meaning: 'After doing', bn: 'করার পরে', explanation: 'Time sequence', examples: [{ jp: 'たべたあとで', romaji: 'tabeta ato de', en: 'after eating' }] },
-  { pattern: '〜（の）なかで〜がいちばん', meaning: 'The most ... among', bn: 'সবার মধ্যে সবথেকে', explanation: 'Superlative', examples: [{ jp: 'くだもののなかでりんごがいちばんすきです', romaji: 'kudamono no naka de ringo ga ichiban suki desu', en: 'of all fruits, apples are the best liked' }] },
-  { pattern: '〜ほしい', meaning: 'Want something', bn: 'চাই', explanation: 'Desire for an object', examples: [{ jp: 'くるまがほしい', romaji: 'kuruma ga hoshii', en: 'want a car' }] },
-  { pattern: '〜あげます', meaning: 'To give', bn: 'দেওয়া', explanation: 'Giving from speaker to others', examples: [{ jp: 'はなをあげます', romaji: 'hana wo agemasu', en: 'give flowers' }] },
-  { pattern: '〜もらいます', meaning: 'To receive', bn: 'পাওয়া/নেওয়া', explanation: 'Receiving something', examples: [{ jp: 'プレゼントをもらいます', romaji: 'purezento wo moraimasu', en: 'receive a present' }] },
-  { pattern: '〜くれます', meaning: 'To give (to me)', bn: 'আমাকে দেওয়া', explanation: 'Giving from others to speaker', examples: [{ jp: 'おかしをくれます', romaji: 'okashi wo kuremasu', en: 'gives me snacks' }] },
-  { pattern: '〜すぎます', meaning: 'Too much', bn: 'খুব বেশি', explanation: 'Excessiveness', examples: [{ jp: 'たべすぎます', romaji: 'tabesugimasu', en: 'eat too much' }] },
-  { pattern: '〜やすい', meaning: 'Easy to do', bn: 'করা সহজ', explanation: 'Ease of action', examples: [{ jp: 'よみやすい', romaji: 'yomiyasui', en: 'easy to read' }] },
-  { pattern: '〜にくい', meaning: 'Hard to do', bn: 'করা কঠিন', explanation: 'Difficulty of action', examples: [{ jp: 'あるきにくい', romaji: 'arukinikui', en: 'hard to walk' }] },
-  { pattern: '〜てくれます', meaning: 'Do for me', bn: 'আমার জন্য করে দেওয়া', explanation: 'Benefactive action for speaker', examples: [{ jp: 'おしえてくれます', romaji: 'oshiete kuremasu', en: 'teaches me' }] },
-  { pattern: '〜てあげます', meaning: 'Do for someone', bn: 'কারও জন্য করে দেওয়া', explanation: 'Benefactive action for others', examples: [{ jp: 'かってあげます', romaji: 'katte agemasu', en: 'buy it for them' }] },
-];
-
-export const N4_GRAMMAR = [
-  { pattern: '〜（に）違いない', meaning: 'Must be...', bn: 'অবশ্যই হবে', explanation: 'Strong conviction', examples: [{ jp: '彼は学生に違いない', romaji: 'Kare wa gakusei ni chigainai', en: 'He must be a student' }] },
-  { pattern: '〜（の）ようだ', meaning: 'Seems like...', bn: 'মনে হচ্ছে', explanation: 'Based on appearance', examples: [{ jp: '雨のようです', romaji: 'Ame no you desu', en: 'It seems like rain' }] },
-  { pattern: '〜（の）はずだ', meaning: 'Expected to be...', bn: 'হওয়ার কথা', explanation: 'Reasonable expectation', examples: [{ jp: '彼は来るはずだ', romaji: 'Kare wa kuru hazu da', en: 'He is expected to come' }] },
-  { pattern: '〜もし〜たら', meaning: 'If... then...', bn: 'যদি... তবে', explanation: 'Conditional', examples: [{ jp: 'もし雨が降ったら', romaji: 'Moshi ame ga futtara', en: 'If it rains' }] },
-  { pattern: '〜（て）おく', meaning: 'Do in advance', bn: 'আগে থেকে করা', explanation: 'Preparation', examples: [{ jp: '買っておきます', romaji: 'Katte okimasu', en: 'I will buy it in advance' }] },
-  { pattern: '〜（て）しまう', meaning: 'To complete / Unfortunately', bn: 'পুরোপুরি করা / দুর্ভাগ্যবশত', explanation: 'Completion or regret', examples: [{ jp: '食べてしまいました', romaji: 'Tabete shimaimashita', en: 'I finished eating it' }] },
-  { pattern: '〜（て）みる', meaning: 'Try doing', bn: 'করে দেখা', explanation: 'Attempting something', examples: [{ jp: '食べてみます', romaji: 'Tabete mimasu', en: 'I will try eating it' }] },
-  { pattern: '〜（い）やすい', meaning: 'Easy to...', bn: 'করা সহজ', explanation: 'Ease of action', examples: [{ jp: '読みやすい', romaji: 'Yomiyasui', en: 'Easy to read' }] },
-  { pattern: '〜（い）にくい', meaning: 'Hard to...', bn: 'করা কঠিন', explanation: 'Difficulty of action', examples: [{ jp: '読みにくい', romaji: 'Yominikui', en: 'Hard to read' }] },
-  { pattern: '〜（た）ばかり', meaning: 'Just finished doing', bn: 'সবেমাত্র শেষ করলাম', explanation: 'Recency of action', examples: [{ jp: '食べたばかりです', romaji: 'Tabeta bakari desu', en: 'I just finished eating' }] },
-  { pattern: '〜（ところ）だ', meaning: 'Just about to... / In the middle of... / Just finished...', bn: 'করার মুহূর্তে', explanation: 'Specific moment of action', examples: [{ jp: '今食べるところです', romaji: 'Ima taberu tokoro desu', en: 'I am just about to eat' }] },
-  { pattern: '〜（た）ことがある', meaning: 'Have ever done...', bn: 'কখনও করেছি', explanation: 'Past experience', examples: [{ jp: '日本に行ったことがあります', romaji: 'Nihon ni itta koto ga arimasu', en: 'I have been to Japan before' }] },
-  { pattern: '〜（ように）いう', meaning: 'Tell to...', bn: 'বলুন যে', explanation: 'Indirect command', examples: [{ jp: '来るように言ってください', romaji: 'Kuru you ni itte kudasai', en: 'Please tell them to come' }] },
-  { pattern: '〜（ように）なる', meaning: 'Become able to... / Change to...', bn: 'সক্ষম হয়ে ওঠা / পরিবর্তিত হওয়া', explanation: 'Change in ability or state', examples: [{ jp: '日本語が話せるようになりました', romaji: 'Nihongo ga hanaseru you ni narimashita', en: 'I became able to speak Japanese' }] },
-  { pattern: '〜（ように）する', meaning: 'Make an effort to...', bn: 'চেষ্টা করা', explanation: 'Effort to establish a habit', examples: [{ jp: '毎日勉強するようにしています', romaji: 'Mainichi benkyou suru you ni shite imasu', en: 'I make an effort to study every day' }] },
-  { pattern: '〜（ほど）〜ない', meaning: 'Not as... as...', bn: 'ততটা... নয়', explanation: 'Comparison', examples: [{ jp: '今日は昨日ほど暑くない', romaji: 'Kyou wa kinou hodo atsukunai', en: 'Today is not as hot as yesterday' }] },
-  { pattern: '〜（より）〜ほうが', meaning: '...is more... than...', bn: '...এর চেয়ে ...বেশি', explanation: 'Preference comparison', examples: [{ jp: 'りんごよりみかんのほうが好きです', romaji: 'Ringo yori mikan no hou ga suki desu', en: 'I like oranges more than apples' }] },
-  { pattern: '〜（は）ずだ', meaning: 'Should be... / Expected to...', bn: 'হওয়ার কথা', explanation: 'Expectation based on logic', examples: [{ jp: '明日は休みのはずです', romaji: 'Ashita wa yasumi no hazu desu', en: 'Tomorrow should be a holiday' }] },
-  { pattern: '〜（つもり）だ', meaning: 'Intend to...', bn: 'মনস্ত করা', explanation: 'Strong intention', examples: [{ jp: '留学するつもりです', romaji: 'Ryuugakuするつもりです', en: 'I intend to study abroad' }] },
-  { pattern: '〜（し）', meaning: 'And... (listing reasons)', bn: 'এবং (কারণ দর্শাতে)', explanation: 'Listing reasons or traits', examples: [{ jp: '安いし、美味しいし', romaji: 'Yasui shi, oishii shi', en: 'It\'s cheap and delicious' }] },
-  { pattern: '〜（て）くれる', meaning: 'Do for me/us', bn: 'আমার জন্য করা', explanation: 'Benefactor favors', examples: [{ jp: '教えてくれました', romaji: 'Oshiete kuremashita', en: 'They taught me' }] },
-  { pattern: '〜（て）あげる', meaning: 'Do for someone', bn: 'কারও জন্য করা', explanation: 'Giving a favor', examples: [{ jp: '買ってあげました', romaji: 'Katte agemashita', en: 'I bought it for them' }] },
-  { pattern: '〜（て）もらう', meaning: 'Have someone do for me', bn: 'কাউকে দিয়ে করিয়ে নেওয়া', explanation: 'Receiving a favor', examples: [{ jp: '手伝ってもらいました', romaji: 'Tetsudatte moraimashita', en: 'I had them help me' }] },
-  { pattern: '〜（て）いただけませんか', meaning: 'Could you please...?', bn: 'দয়া করে করবেন কি?', explanation: 'Polite request', examples: [{ jp: '教えていただけませんか', romaji: 'Oshiete itadakemasen ka', en: 'Could you please teach me?' }] },
-  { pattern: '〜（さ）せる', meaning: 'Causative form (Make/Let do)', bn: 'প্রেরণার্থ ক্রিয়া', explanation: 'Making or letting someone do something', examples: [{ jp: '彼に食べさせる', romaji: 'Kare ni tabesaseru', en: 'Make him eat' }] },
-  { pattern: '〜（ら）れる', meaning: 'Passive form / Potential form', bn: 'কর্মবাচ্য / সক্ষমতা', explanation: 'Passive action or ability', examples: [{ jp: '日本語が話せる', romaji: 'Nihongo ga hanaseru', en: 'Can speak Japanese' }] },
-  { pattern: 'お〜ください', meaning: 'Please do (Very polite)', bn: 'অনুগ্রহ করে করুন (বিনম্র)', explanation: 'Honorific request', examples: [{ jp: 'お座りください', romaji: 'Osuwari kudasai', en: 'Please have a seat' }] },
-  { pattern: '〜ために', meaning: 'For / In order to', bn: 'জন্য', explanation: 'Purpose or reason', examples: [{ jp: '留学のために貯金する', romaji: 'Ryuugaku no tame ni chokin suru', en: 'Save money for studying abroad' }] },
-  { pattern: '〜ように', meaning: 'So that...', bn: 'যাতে...', explanation: 'Resulting state or purpose', examples: [{ jp: '忘れないようにメモする', romaji: 'Wasurenai you ni memo suru', en: 'Take notes so as not to forget' }] },
-  { pattern: '〜といった', meaning: 'Such as...', bn: 'এমন কি...', explanation: 'Examples of a category', examples: [{ jp: '寿司や天ぷらといった料理', romaji: 'Sushi ya tenpura to itta ryouri', en: 'Dishes such as sushi and tempura' }] },
-  { pattern: '〜による', meaning: 'Due to / By means of', bn: 'কারণে', explanation: 'Cause or agent', examples: [{ jp: '台風による被害', romaji: 'Taifuu ni yoru higai', en: 'Damage due to the typhoon' }] },
-  { pattern: '〜ばかりでなく', meaning: 'Not only... but also...', bn: 'শুধু নয়... আরও', explanation: 'Addition', examples: [{ jp: '英語ばかりでなく日本語も', romaji: 'Eigo bakari denaku Nihongo mo', en: 'Not only English but also Japanese' }] },
-  { pattern: '〜たびに', meaning: 'Every time...', bn: 'প্রতিবার', explanation: 'Repetition', examples: [{ jp: '会うたびに', romaji: 'Au tabi ni', en: 'Every time we meet' }] },
-  { pattern: '〜はずがない', meaning: 'Cannot be...', bn: 'হওয়ার কথা নয়', explanation: 'Absolute denial of expectation', examples: [{ jp: '彼が犯人のはずがない', romaji: 'Kare ga hannin no hazu ga nai', en: 'He cannot be the culprit' }] },
-  { pattern: '〜おかげで', meaning: 'Thanks to...', bn: 'কারণে (ইতিবাচক)', explanation: 'Positive result caused by someone/something', examples: [{ jp: '先生のおかげで合格した', romaji: 'Sensei no okage de goukaku shita', en: 'I passed thanks to my teacher' }] },
-  { pattern: '〜せいで', meaning: 'Because of... (Negative)', bn: 'কারণে (নেতিবাচক)', explanation: 'Negative result caused by someone/something', examples: [{ jp: '雨のせいで遅れた', romaji: 'Ame no sei de okureta', en: 'I was late because of the rain' }] },
-  { pattern: '〜にかわって', meaning: 'Instead of...', bn: 'পরিবর্তে', explanation: 'Representation or substitution', examples: [{ jp: '父にかわって挨拶する', romaji: 'Chichi ni kawatte aisatsu suru', en: 'Greets instead of my father' }] },
-  { pattern: '〜くらい', meaning: 'About / To the extent of...', bn: 'প্রায় / পর্যন্ত', explanation: 'Approximate level or degree', examples: [{ jp: '泣きたいくらい嬉しい', romaji: 'Nakitai kurai ureshii', en: 'So happy I want to cry' }] },
-  { pattern: '〜ほど', meaning: 'To the degree of...', bn: 'পর্যন্ত', explanation: 'Extreme degree', examples: [{ jp: '山ほど荷物がある', romaji: 'Yama hodo nimotsu ga aru', en: 'There are mountains of luggage' }] },
-  { pattern: '〜さえ', meaning: 'Even...', bn: 'এমনকি', explanation: 'Emphasis on an extreme case', examples: [{ jp: '名前さえ書けない', romaji: 'Namae sae kakenai', en: 'Cannot even write their name' }] },
-  { pattern: '〜うちに', meaning: 'While... (before change)', bn: 'অবস্থায়', explanation: 'Action during a continued state', examples: [{ jp: '若いうちに勉強する', romaji: 'Wakai uchi ni benkyou suru', en: 'Study while young' }] },
-  { pattern: '〜がきっかけで', meaning: 'Triggered by...', bn: 'সূত্রপাতে', explanation: 'Origin of an interest or change', examples: [{ jp: 'アニメがきっかけで日本語を始めた', romaji: 'Anime ga kikkake de Nihongo wo hajimeta', en: 'Started Japanese because of anime' }] },
-  { pattern: '〜を中心に', meaning: 'Centering on...', bn: 'কেন্দ্রীভূত করে', explanation: 'Focusing on something', examples: [{ jp: '駅を中心に町が広がる', romaji: 'Eki wo chuushin ni machi ga hirogaru', en: 'The town expands around the station' }] },
-  { pattern: '〜をはじめ', meaning: 'Starting with...', bn: 'শুরু করে', explanation: 'Giving a primary example', examples: [{ jp: '社長をはじめ社員全員', romaji: 'Shachou wo hajime shain zen-in', en: 'Everyone, starting with the president' }] },
-  { pattern: '〜において', meaning: 'In / At (formal)', bn: 'ভিতরে / স্থানে', explanation: 'Formal version of で or に', examples: [{ jp: '式典は講堂において行われる', romaji: 'Shikiten wa koudou ni oite okonawareru', en: 'The ceremony will be held in the auditorium' }] },
-  { pattern: '〜にわたって', meaning: 'Throughout / Across...', bn: 'জুড়ে', explanation: 'Span of time or space', examples: [{ jp: '数キロにわたって', romaji: 'Suukiro ni watatte', en: 'Across several kilometers' }] },
-  { pattern: '〜てはじめて', meaning: 'Only after...', bn: 'করার পরেই কেবল', explanation: 'Initial realization after an action', examples: [{ jp: '日本に来てはじめて', romaji: 'Nihon ni kite hajimete', en: 'Only after coming to Japan' }] },
-  { pattern: '〜てからでないと', meaning: 'Unless... then not...', bn: 'ব্যতীত হবে না', explanation: 'Condition for a subsequent action', examples: [{ jp: '宿題をやってからでないと', romaji: 'Shukudai wo yatte kara denaito', en: 'Unless I do my homework, I can\'t' }] },
-  { pattern: '〜（の）なかで〜がいちばん', meaning: 'The most ... among', bn: 'সবার মধ্যে সবথেকে', explanation: 'Superlative', examples: [{ jp: 'くだもののなかでりんごがいちばんすきです', romaji: 'kudamono no naka de ringo ga ichiban suki desu', en: 'of all fruits, apples are the best liked' }] },
-  { id: 'n4g40', level: 'N4', pattern: '〜ば〜ほど', meaning: 'the more ... the more ...', bn: 'যত বেশি ... তত বেশি', explanation: 'Proportional change', examples: [{ jp: '日本語は勉強すればするほど難しくなります', romaji: 'Nihongo wa benkyou sureba suru hodo muzukashiku narimasu', en: 'The more you study Japanese, the harder it gets' }] },
-  { id: 'n4g41', level: 'N4', pattern: '〜かけの / 〜かける', meaning: 'half-finished / in the middle of...', bn: 'অর্ধসমাপ্ত', explanation: 'Action started but not finished', examples: [{ jp: '飲みかけのコーヒー', romaji: 'nomikake no kohii', en: 'half-finished coffee' }] },
-  { id: 'n4g42', level: 'N4', pattern: '〜きる', meaning: 'to do completely / finish', bn: 'পুরোপুরি শেষ করা', explanation: 'Completion with effort', examples: [{ jp: '走りきった', romaji: 'hashirikitta', en: 'ran to the end' }] },
-  { id: 'n4g43', level: 'N4', pattern: '〜だらけ', meaning: 'covered with / full of...', bn: 'ভর্তি / পূর্ণ', explanation: 'Abundance of something undesirable', examples: [{ jp: '泥だらけの靴', romaji: 'dorodarake no kutsu', en: 'mud-covered shoes' }] },
-  { id: 'n4g44', level: 'N4', pattern: '〜うちに', meaning: 'while / before...', bn: 'সময় থাকতে / হওয়ার আগে', explanation: 'Opportunity during a state', examples: [{ jp: '忘れないうちに', romaji: 'wasurenai uchi ni', en: 'while I haven\'t forgotten' }] },
-  { id: 'n4g45', level: 'N4', pattern: '〜おかげで', meaning: 'thanks to...', bn: 'কারণে (ভালো)', explanation: 'Positive cause', examples: [{ jp: 'あなたのおかげで助かりました', romaji: 'anata no okage de tasukarimashita', en: 'I was saved thanks to you' }] },
-  { id: 'n4g46', level: 'N4', pattern: '〜せいで', meaning: 'because of... (negative)', bn: 'কারণে (খারাপ)', explanation: 'Negative cause', examples: [{ jp: '暑いせいで寝られなかった', romaji: 'atsui sei de nerarenakatta', en: 'I couldn\'t sleep because of the heat' }] },
-  { id: 'n4g47', level: 'N4', pattern: '〜せいか', meaning: 'perhaps because of...', bn: 'হয়তো কারণে', explanation: 'Uncertain cause', examples: [{ jp: '風邪のせいか元気がない', romaji: 'kaze no seika genki ga nai', en: 'Perhaps because of a cold, I have no energy' }] },
-  { id: 'n4g48', level: 'N4', pattern: '〜たて', meaning: 'just finished / fresh', bn: 'সবেমাত্র (তাজা)', explanation: 'Recently completed action', examples: [{ jp: '焼きたてのパン', romaji: 'yakitate no pan', en: 'freshly baked bread' }] },
-  { id: 'n4g49', level: 'N4', pattern: '〜（に）つく', meaning: 'regarding / about...', bn: 'সম্পর্কে / বিষয়', explanation: 'Focus on a topic', examples: [{ jp: '日本文化について', romaji: 'Nihon bunka ni tsuite', en: 'about Japanese culture' }] },
-  { id: 'n4g50', level: 'N4', pattern: '〜に際して', meaning: 'on the occasion of...', bn: 'উপলক্ষে', explanation: 'Special occasion/event', examples: [{ jp: '卒業に際して', romaji: 'sotsugyou ni saishite', en: 'on the occasion of graduation' }] },
-  { id: 'n4g51', level: 'N4', pattern: '〜にしては', meaning: 'for a... / considering that...', bn: 'তুলনায় / হিসেবে', explanation: 'Difference between fact and expectation', examples: [{ jp: '子供にしてはよく知っている', romaji: 'kodomo ni shite wa yoku shitte iru', en: 'He knows a lot for a child' }] },
-  { id: 'n4g52', level: 'N4', pattern: '〜につき', meaning: 'per / due to...', bn: 'প্রতি / কারণে', explanation: 'Rate or reason (formal)', examples: [{ jp: '一人につき三枚', romaji: 'hitori ni tsuki sanmai', en: 'three sheets per person' }] },
-  { id: 'n4g53', level: 'N4', pattern: '〜反面', meaning: 'on the other hand / however', bn: 'অন্যদিকে', explanation: 'Contrasting sides of the same thing', examples: [{ jp: '便利な反面、危ない', romaji: 'benri na hanmen, abunai', en: 'while convenient, it is also dangerous' }] },
-  { id: 'n4g54', level: 'N4', pattern: '〜向け', meaning: 'aimed at / for...', bn: 'উদ্দেশ্যে / জন্য', explanation: 'Intended audience', examples: [{ jp: '子供向けの映画', romaji: 'kodomo muke no eiga', en: 'a movie for children' }] },
-  { id: 'n4g55', level: 'N4', pattern: '〜向き', meaning: 'suitable for...', bn: 'উপযুক্ত', explanation: 'Suitability', examples: [{ jp: '夏向きの服', romaji: 'natsu muki no fuku', en: 'clothes suitable for summer' }] },
-  { id: 'n4g56', level: 'N4', pattern: '〜も〜ば、〜も', meaning: 'both ... and ...', bn: '...ও ...ও', explanation: 'Simultaneous qualities or reasons', examples: [{ jp: '頭もよければ、スポーツもできる', romaji: 'atama mo yokereba, supootsu mo dekiru', en: 'He is both smart and good at sports' }] },
-  { id: 'n4g57', level: 'N4', pattern: '〜やら〜やら', meaning: '... and ..., and so on', bn: '...এবং ...ইত্যাদি', explanation: 'Listing messy or unorganized examples', examples: [{ jp: '宿題やら仕事やらで忙しい', romaji: 'shukudai yara shigoto yara de isogashii', en: 'busy with things like homework and work' }] },
-  { id: 'n4g58', level: 'N4', pattern: '〜よりほかない', meaning: 'nothing but to...', bn: 'ছাড়া কোনো উপায় নেই', explanation: 'No other choice', examples: [{ jp: 'やるよりほかない', romaji: 'yaru yori hoka nai', en: 'no choice but to do it' }] },
-  { id: 'n4g59', level: 'N4', pattern: '〜わけがない', meaning: 'there is no way that...', bn: 'অসম্ভব / হওয়ার কথা নয়', explanation: 'Strong logical denial', examples: [{ jp: '彼が犯人なわけがない', romaji: 'kare ga hannin na wake ga nai', en: 'There is no way he is the culprit' }] },
-  { id: 'n4g60', level: 'N4', pattern: '〜わけにはいかない', meaning: 'cannot (due to social or moral reasons)', bn: 'পারি না (সামাজিক কারণে)', explanation: 'Inability based on external circumstances', examples: [{ jp: '休むわけにはいかない', romaji: 'yasumu wake ni wa ikanai', en: 'I cannot afford to rest' }] },
-  { id: 'n4g61', level: 'N4', pattern: '〜がたい', meaning: 'difficult to...', bn: 'কঠিন', explanation: 'Psychological difficulty', examples: [{ jp: '信じがたい事実', romaji: 'shinjigatai jijitsu', en: 'an unbelievable fact' }] },
-  { id: 'n4g62', level: 'N4', pattern: '〜かねる', meaning: 'cannot / find it difficult to...', bn: 'পারি না (বিনম্র)', explanation: 'Polite refusal or inability', examples: [{ jp: 'お引き受けしかねます', romaji: 'ohikiuke shikanemasu', en: 'I cannot accept (the request)' }] },
-  { id: 'n4g63', level: 'N4', pattern: '〜きれない', meaning: 'cannot finish...', bn: 'শেষ করতে পারি না', explanation: 'Inability to complete', examples: [{ jp: '食べきれません', romaji: 'tabekiremasen', en: 'I can\'t finish eating it' }] },
-  { id: 'n4g64', level: 'N4', pattern: '〜こそ', meaning: 'precisely / especially...', bn: 'অবশ্যই / বিশেষ করে', explanation: 'Strong emphasis', examples: [{ jp: '今年こそ合格する', romaji: 'kotoshi koso goukaku suru', en: 'I will pass this year for sure' }] },
-  { id: 'n4g65', level: 'N4', pattern: '〜ざるを得ない', meaning: 'cannot help but...', bn: 'না করে উপায় নেই', explanation: 'Strong necessity', examples: [{ jp: '中止せざるを得ない', romaji: 'chuushi sezaru wo enai', en: 'We have no choice but to cancel' }] },
-  { id: 'n4g66', level: 'N4', pattern: '〜次第', meaning: 'as soon as...', bn: 'হওয়ার সাথে সাথেই', explanation: 'Immediate action after another', examples: [{ jp: '終わり次第連絡します', romaji: 'owari shidai renraku shimasu', en: 'I will contact you as soon as I finish' }] },
-  { id: 'n4g67', level: 'N4', pattern: '〜ないことはない', meaning: 'it\'s not that ... is not ...', bn: 'এমন নয় যে ... না', explanation: 'Double negative (mild affirmation)', examples: [{ jp: '食べないことはない', romaji: 'tabenai koto wa nai', en: 'It\'s not that I won\'t eat it (but...)' }] },
-  { id: 'n4g68', level: 'N4', pattern: '〜に基づいて', meaning: 'based on...', bn: 'ভিত্তিতে', explanation: 'Basis or criteria', examples: [{ jp: '事実に基づいて', romaji: 'jijitsu ni motozuite', en: 'based on the facts' }] },
-  { id: 'n4g69', level: 'N4', pattern: '〜を経て', meaning: 'through / via...', bn: 'মধ্য দিয়ে', explanation: 'Passage through a place or time', examples: [{ jp: '経験を経て', romaji: 'keiken wo hete', en: 'through experience' }] },
-  { id: 'n4g70', level: 'N4', pattern: '〜を通じて / 〜を通して', meaning: 'through / during...', bn: 'মাধ্যমে / জুড়ে', explanation: 'Medium or timeframe', examples: [{ jp: '一年を通じて', romaji: 'ichinen wo tsuujite', en: 'throughout the year' }] },
-  { pattern: '〜もし〜たら', meaning: 'If... then...', bn: 'যদি... তবে...', explanation: 'Conditional', examples: [{ jp: 'もし雨が降ったら', romaji: 'Moshi ame ga futtara', en: 'If it rains' }] },
-  { pattern: '〜（て）おく', meaning: 'Do in advance', bn: 'আগে থেকে করা', explanation: 'Preparation', examples: [{ jp: '買っておきます', romaji: 'Katte okimasu', en: 'I will buy it in advance' }] },
-  { pattern: '〜（て）しまう', meaning: 'To complete / Unfortunately', bn: 'পুরোপুরি করা / দুর্ভাগ্যবশত', explanation: 'Completion or regret', examples: [{ jp: '食べてしまいました', romaji: 'Tabete shimaimashita', en: 'I finished eating it' }] },
-  { pattern: '〜（て）みる', meaning: 'Try doing', bn: 'করে দেখা', explanation: 'Attempting something', examples: [{ jp: '食べてみます', romaji: 'Tabete mimasu', en: 'I will try eating it' }] },
-  { pattern: '〜（た）ばかり', meaning: 'Just finished doing', bn: 'সবেমাত্র শেষ করলাম', explanation: 'Recency of action', examples: [{ jp: '食べたばかりです', romaji: 'Tabeta bakari desu', en: 'I just finished eating' }] },
-  { pattern: '〜（ように）なる', meaning: 'Become able to... / Change to...', bn: 'সক্ষম হওয়া', explanation: 'Change in ability or state', examples: [{ jp: '日本語が話せるようになりました', romaji: 'Nihongo ga hanaseru you ni narimashita', en: 'I became able to speak Japanese' }] },
-  { pattern: '〜（ように）する', meaning: 'Make an effort to...', bn: 'চেষ্টা করা', explanation: 'Effort to establish a habit', examples: [{ jp: '毎日勉強するようにしています', romaji: 'Mainichi benkyou suru you ni shite imasu', en: 'I make an effort to study every day' }] },
-  { pattern: '〜（ほど）〜ない', meaning: 'Not as... as...', bn: 'ততটা... নয়', explanation: 'Comparison', examples: [{ jp: '今日は昨日ほど暑くない', romaji: 'Kyou wa kinou hodo atsukunai', en: 'Today is not as hot as yesterday' }] },
-  { pattern: '〜（より）〜ほうが', meaning: '...is more... than...', bn: 'বেশি...', explanation: 'Preference comparison', examples: [{ jp: 'りんごよりみかんのほうが好きです', romaji: 'Ringo yori mikan no hou ga suki desu', en: 'I like oranges more than apples' }] },
-  { pattern: '〜（は）ずだ', meaning: 'Should be... / Expected to...', bn: 'হওয়ার কথা', explanation: 'Expectation based on logic', examples: [{ jp: '明日は休みのはずです', romaji: 'Ashita wa yasumi no hazu desu', en: 'Tomorrow should be a holiday' }] },
-  { pattern: '〜（し）', meaning: 'And... (listing reasons)', bn: 'এবং...', explanation: 'Listing reasons or traits', examples: [{ jp: '安いし、美味しいし', romaji: 'Yasui shi, oishii shi', en: 'It\'s cheap and delicious' }] },
-  { pattern: '〜（て）くれる', meaning: 'Do for me/us', bn: 'আমার জন্য করা', explanation: 'Benefactor favors', examples: [{ jp: '教えてくれました', romaji: 'Oshiete kuremashita', en: 'They taught me' }] },
-  { pattern: '〜（て）あげる', meaning: 'Do for someone', bn: 'কারও জন্য করা', explanation: 'Giving a favor', examples: [{ jp: '買ってあげました', romaji: 'Katte agemashita', en: 'I bought it for them' }] },
-  { pattern: '〜（て）もらう', meaning: 'Have someone do for me', bn: 'কাউকে দিয়ে করিয়ে নেওয়া', explanation: 'Receiving a favor', examples: [{ jp: '手伝ってもらいました', romaji: 'Tetsudatte moraimashita', en: 'I had them help me' }] },
-  { pattern: '〜（て）いただけませんか', meaning: 'Could you please...?', bn: 'দয়া করে করবেন কি?', explanation: 'Polite request', examples: [{ jp: '教えていただけませんか', romaji: 'Oshiete itadakemasen ka', en: 'Could you please teach me?' }] },
-  { pattern: '〜（さ）せる', meaning: 'Causative form (Make/Let do)', bn: 'প্রেরণার্থ ক্রিয়া (কাউকে দিয়ে করানো)', explanation: 'Making or letting someone do something', examples: [{ jp: '彼に食べさせる', romaji: 'Kare ni tabesaseru', en: 'Make him eat' }] },
-  { pattern: '〜（ら）れる', meaning: 'Passive form / Potential form', bn: 'কর্মবাচ্য / সক্ষমতা (পারা)', explanation: 'Passive action or ability', examples: [{ jp: '日本語が話せる', romaji: 'Nihongo ga hanaseru', en: 'Can speak Japanese' }] },
-  { pattern: 'お〜ください', meaning: 'Please do (Very polite)', bn: 'অনুগ্রহ করে করুন (অত্যন্ত বিনম্র)', explanation: 'Honorific request', examples: [{ jp: 'お座りください', romaji: 'Osuwari kudasai', en: 'Please have a seat' }] },
-  { pattern: '〜ために', meaning: 'For / In order to', bn: 'জন্য / উদ্দেশ্যে', explanation: 'Purpose or reason', examples: [{ jp: '留学のために貯金する', romaji: 'Ryuugaku no tame ni chokin suru', en: 'Save money for studying abroad' }] },
-  { pattern: '〜ように', meaning: 'So that...', bn: 'যাতে / উদ্দেশ্যে', explanation: 'Resulting state or purpose', examples: [{ jp: '忘れないようにメモする', romaji: 'Wasurenai you ni memo suru', en: 'Take notes so as not to forget' }] },
-  { pattern: '〜による', meaning: 'Due to / By means of', bn: 'কারণে / মাধ্যমে', explanation: 'Cause or agent', examples: [{ jp: '台風による被害', romaji: 'Taifuu ni yoru higai', en: 'Damage due to the typhoon' }] },
-  { pattern: '〜ばかりでなく', meaning: 'Not only... but also...', bn: 'শুধু নয়... আরও', explanation: 'Addition', examples: [{ jp: '英語ばかりでなく日本語も', romaji: 'Eigo bakari denaku Nihongo mo', en: 'Not only English but also Japanese' }] },
-  { pattern: '〜たびに', meaning: 'Every time...', bn: 'প্রতিবার', explanation: 'Repetition', examples: [{ jp: '会うたびに', romaji: 'Au tabi ni', en: 'Every time we meet' }] },
-  { pattern: '〜はずがない', meaning: 'Cannot be...', bn: 'হওয়া অসম্ভব', explanation: 'Absolute denial of expectation', examples: [{ jp: '彼が犯人のはずがない', romaji: 'Kare ga hannin no hazu ga nai', en: 'He cannot be the culprit' }] },
-];
-
-export const N3_GRAMMAR = [
-  { pattern: '〜あげる', meaning: 'To finish doing', bn: 'শেষ করা', explanation: 'Complete a task with effort', examples: [{ jp: '書き上げる', romaji: 'kakiageru', en: 'finish writing' }] },
-  { pattern: '〜あまり', meaning: 'So much that...', bn: 'এতটাই যে', explanation: 'Extreme degree resulting in state', examples: [{ jp: 'うれしさのあまり', romaji: 'ureshisa no amari', en: 'out of extreme joy' }] },
-  { pattern: '〜以上に', meaning: 'More than...', bn: 'অধিক', explanation: 'Greater than expected', examples: [{ jp: '想像以上に', romaji: 'souzou ijou ni', en: 'more than imagined' }] },
-  { pattern: '〜一方だ', meaning: 'Keep on ...ing', bn: 'চলতেই থাকা', explanation: 'Continued trend in one direction', examples: [{ jp: '物価は上がる一方だ', romaji: 'bukka wa agaru ippou da', en: 'prices keep going up' }] },
-  { pattern: '〜一方（で）', meaning: 'On the other hand', bn: 'অন্যদিকে', explanation: 'Contrast or simultaneous state', examples: [{ jp: '厳しい一方で優しい', romaji: 'kibishii ippou de yasashii', en: 'strict but also kind' }] },
-  { pattern: '〜うちに', meaning: 'While / Before change', bn: 'সময়ে / হওয়ার আগে', explanation: 'Action during continued state', examples: [{ jp: '忘れないうちに', romaji: 'wasurenai uchi ni', en: 'while I haven\'t forgotten' }] },
-  { pattern: '〜おかげで', meaning: 'Thanks to', bn: 'কারণে (ইতিবাচক)', explanation: 'Positive cause', examples: [{ jp: '先生のおかげで', romaji: 'sensei no okage de', en: 'thanks to the teacher' }] },
-  { pattern: '〜がる', meaning: 'Show signs of...', bn: 'লক্ষণ দেখানো', explanation: 'Third person emotion/desire', examples: [{ jp: '寒がる', romaji: 'samugaru', en: 'act as if cold' }] },
-  { pattern: '〜きった', meaning: 'Completely / Extremely', bn: 'পুরোপুরি / চরম', explanation: 'Exhaustive or extreme state', examples: [{ jp: '疲れきった', romaji: 'tsukarekitta', en: 'completely exhausted' }] },
-  { pattern: '〜ぎみ', meaning: 'Trending towards...', bn: 'লক্ষণ থাকা', explanation: 'Slight negative trend', examples: [{ jp: '風邪ぎみ', romaji: 'kaze gimi', en: 'having a slight cold' }] },
-  { pattern: '〜きれない', meaning: 'Cannot do all', bn: 'পুরোটা করা সম্ভব নয়', explanation: 'Impossible to complete', examples: [{ jp: '食べきれない', romaji: 'tabekirenai', en: 'cannot eat it all' }] },
-  { pattern: '〜くせに', meaning: 'Even though... / Despite...', bn: 'সত্ত্বেও (তিরস্কার)', explanation: 'Despite expectations (critical)', examples: [{ jp: '知らないくせに', romaji: 'shiranai kuse ni', en: 'even though they don\'t know' }] },
-  { pattern: '〜くらいなら', meaning: 'If it comes to ... then rather', bn: 'যদি ... হয় তবে বরং', explanation: 'Preference over worse option', examples: [{ jp: 'あきらめるくらいなら死ぬ', romaji: 'akirameru kurai nara shinu', en: 'I\'d rather die than give up' }] },
-  { pattern: '〜最中に', meaning: 'In the middle of', bn: 'ব্যস্ত থাকা অবস্থায়', explanation: 'Specifically during an event', examples: [{ jp: '食事の最中に', romaji: 'shokuji no saichuu ni', en: 'in the middle of a meal' }] },
-  { pattern: '〜さえ', meaning: 'Even', bn: 'এমনকি', explanation: 'Emphasis on extreme case', examples: [{ jp: '名前さえ書けない', romaji: 'namae sae kakenai', en: 'cannot even write name' }] },
-  { pattern: '〜さえ〜ば', meaning: 'As long as...', bn: 'যতক্ষণ পর্যন্ত', explanation: 'Only condition needed', examples: [{ jp: 'お金さえあれば', romaji: 'okane sae areba', en: 'as long as I have money' }] },
-  { pattern: '〜しかない', meaning: 'No choice but to...', bn: 'এছাড়া উপায় নেই', explanation: 'Sole remaining option', examples: [{ jp: 'やるしかない', romaji: 'yaru shikanai', en: 'no choice but to do it' }] },
-  { pattern: '〜たて', meaning: 'Freshly done', bn: 'সদ্য করা', explanation: 'Just finished (mostly cooking)', examples: [{ jp: '焼きたてのパン', romaji: 'yakitate no pan', en: 'freshly baked bread' }] },
-  { pattern: '〜だらけ', meaning: 'Full of...', bn: 'ভর্তি', explanation: 'Covered in (usually negative)', examples: [{ jp: '泥だらけ', romaji: 'doro darake', en: 'covered in mud' }] },
-  { pattern: '〜つい', meaning: 'Accidentally / Unintentionally', bn: 'অসাবধানতাবশত', explanation: 'Doing something without thinking', examples: [{ jp: 'つい食べてしまった', romaji: 'tsui tabete shimatta', en: 'unintentionally ate it' }] },
-  { pattern: '〜っこない', meaning: 'No way that...', bn: 'হওয়া অসম্ভব', explanation: 'Strong casual denial of possibility', examples: [{ jp: 'できっこない', romaji: 'dekikkonai', en: 'there\'s no way I can do it' }] },
-  { pattern: '〜つもりで', meaning: 'With the intention of', bn: 'সদিচ্ছায়', explanation: 'Acting as if one intended', examples: [{ jp: '旅行したつもりで貯金する', romaji: 'ryokou shita tsumori de chokin suru', en: 'save money as if having traveled' }] },
-  { pattern: '〜っぱなし', meaning: 'Left as is', bn: 'ফেলে রাখা', explanation: 'State left without care', examples: [{ jp: '開けっぱなし', romaji: 'akeppanashi', en: 'left open' }] },
-  { pattern: '〜ついでに', meaning: 'While one is at it', bn: 'সুযোগ বুঝে', explanation: 'Do secondary task during primary', examples: [{ jp: '散歩のついでに', romaji: 'sanpo no tsuide ni', en: 'while on a walk (do something else)' }] },
-  { pattern: '〜っぽい', meaning: 'Like / -ish', bn: 'মতো / ভাবাপন্ন', explanation: 'Resemblance (casual)', examples: [{ jp: '子供っぽい', romaji: 'kodomoppoi', en: 'childish' }] },
-  { pattern: '〜てごらん', meaning: 'Try doing it (casual command)', bn: 'করে দেখো', explanation: 'Gentle imperative', examples: [{ jp: 'やってごらん', romaji: 'yatte goran', en: 'try doing it' }] },
-  { pattern: '〜てしかたがない', meaning: 'Cannot help but...', bn: 'না করে পারা যায় না', explanation: 'Irresistible feeling', examples: [{ jp: '会いたくてしかたがない', romaji: 'aitakute shikata ga nai', en: 'cannot help but want to meet' }] },
-  { pattern: '〜として', meaning: 'As ... / In the capacity of', bn: 'হিসাবে', explanation: 'Role or status', examples: [{ jp: '学生として', romaji: 'gakusei toshite', en: 'as a student' }] },
-  { pattern: '〜とたん（に）', meaning: 'The moment that...', bn: 'মুহূর্তেই', explanation: 'Immediate subsequent action', examples: [{ jp: '窓を開けたとたん', romaji: 'mado wo aketa totan', en: 'the moment I opened the window' }] },
-  { pattern: '〜と共に', meaning: 'Together with', bn: 'সাথে সাথে', explanation: 'Simultaneous progression', examples: [{ jp: '時代と共に', romaji: 'jidai to tomo ni', en: 'along with the times' }] },
-  { pattern: '〜ないことには', meaning: 'Unless...', bn: 'ব্যতীত', explanation: 'Prerequisite condition', examples: [{ jp: '行かないことには', romaji: 'ikanai koto ni wa', en: 'unless you go' }] },
-  { pattern: '〜ながらも', meaning: 'Even though... while...', bn: 'সত্ত্বেও', explanation: 'Contradictory state', examples: [{ jp: '狭いながらも楽しい', romaji: 'semai nagara mo tanoshii', en: 'small but fun' }] },
-  { pattern: '〜など', meaning: 'Things like...', bn: 'প্রভৃতি / ইত্যাদি', explanation: 'Non-exhaustive list / humility', examples: [{ jp: '料理など', romaji: 'ryouri nado', en: 'things like cooking' }] },
-  { pattern: '〜において', meaning: 'In / At', bn: 'স্থানে', explanation: 'Location (formal)', examples: [{ jp: '東京において', romaji: 'toukyou ni oite', en: 'in Tokyo' }] },
-  { pattern: '〜にとって', meaning: 'For / To ...', bn: 'কাছে', explanation: 'Perspective of someone', examples: [{ jp: '私にとって', romaji: 'watashi ni totte', en: 'for me' }] },
-  { pattern: '〜に反して', meaning: 'Against / Contrary to', bn: 'বিপরীতে', explanation: 'Opposite of expectation', examples: [{ jp: '予想に反して', romaji: 'yosou ni hanshite', en: 'contrary to expectations' }] },
-  { pattern: '〜ふりをする', meaning: 'Pretend to...', bn: 'ভান করা', explanation: 'False appearance', examples: [{ jp: '寝たふりをする', romaji: 'neta furi wo suru', en: 'pretend to sleep' }] },
-  { pattern: '〜向き', meaning: 'Suitable for...', bn: 'উপযোগী', explanation: 'Target audience', examples: [{ jp: '初心者向き', romaji: 'shoshinsha muki', en: 'suitable for beginners' }] },
-  { pattern: '〜向け', meaning: 'Intended for...', bn: 'জন্য তৈরিকৃত', explanation: 'Specific destination/user', examples: [{ jp: '輸出向け', romaji: 'yushutsu muke', en: 'intended for export' }] },
-  { pattern: '〜もしない', meaning: 'Don\'t even...', bn: 'করেই না', explanation: 'Emphatic negative', examples: [{ jp: '見もしない', romaji: 'mi mo shinai', en: 'won\'t even look' }] },
-  { pattern: '〜わけだ', meaning: 'Naturally it means...', bn: 'স্বাভাবিকভাবেই তার অর্থ', explanation: 'Logical conclusion', examples: [{ jp: '暑いわけだ', romaji: 'atsui wake da', en: 'no wonder it\'s hot' }] },
-  { pattern: '〜わけにはいかない', meaning: 'Cannot afford to...', bn: 'সম্ভব নয় (নৈতিকভাবে)', explanation: 'Moral or social impossibility', examples: [{ jp: '休むわけにはいかない', romaji: 'yasumu wake ni wa ikanai', en: 'cannot afford to take off' }] },
-  { id: 'n3g50', level: 'N3', pattern: '〜につれて', meaning: 'as ... then ...', bn: 'সাথে সাথে', explanation: 'Simultaneous change', examples: [{ jp: '時間がたつにつれて', romaji: 'jikan ga tatsu ni tsurete', en: 'as time passes' }] },
-  { id: 'n3g51', level: 'N3', pattern: '〜に際して', meaning: 'on the occasion of...', bn: 'উপলক্ষে', explanation: 'Special event', examples: [{ jp: '出発に際して', romaji: 'shuppatsu ni saishite', en: 'on the occasion of departure' }] },
-  { id: 'n3g52', level: 'N3', pattern: '〜にかけては', meaning: 'when it comes to...', bn: 'বিষয়ে / ক্ষেত্রে', explanation: 'Area of expertise', examples: [{ jp: '歌にかけては', romaji: 'uta ni kakete wa', en: 'when it comes to singing' }] },
-  { id: 'n3g53', level: 'N3', pattern: '〜にこたえて', meaning: 'in response to...', bn: 'সাঁড়া জড়িয়ে', explanation: 'Meeting expectations/requests', examples: [{ jp: '期待にこたえて', romaji: 'kitai ni kotaete', en: 'in response to expectations' }] },
-  { id: 'n3g54', level: 'N3', pattern: '〜に加えて', meaning: 'in addition to...', bn: 'যোগ করে', explanation: 'Adding another element', examples: [{ jp: '雨に加えて風も', romaji: 'ame ni kuwaete kaze mo', en: 'in addition to rain, wind too' }] },
-  { id: 'n3g55', level: 'N3', pattern: '〜に反して', meaning: 'contrary to...', bn: 'বিপরীতে', explanation: 'Against expectation', examples: [{ jp: '予想に反して', romaji: 'yosou ni hanshite', en: 'contrary to expectations' }] },
-  { id: 'n3g56', level: 'N3', pattern: '〜に伴って', meaning: 'along with / as ... happens', bn: 'সাথেই', explanation: 'Simultaneous evolution', examples: [{ jp: '人口の増加に伴って', romaji: 'jinkou no zouka ni tomonatte', en: 'along with the increase in population' }] },
-  { id: 'n3g57', level: 'N3', pattern: '〜に基づいて', meaning: 'based on...', bn: 'ভিত্তিতে', explanation: 'Basis of action', examples: [{ jp: 'データに基づいて', romaji: 'deeta ni motozuite', en: 'based on data' }] },
-  { id: 'n3g58', level: 'N3', pattern: '〜抜きで', meaning: 'without / setting aside', bn: 'ছাড়া', explanation: 'Exclusion', examples: [{ jp: '冗談抜きで', romaji: 'joudan nuki de', en: 'jokes aside' }] },
-  { id: 'n3g59', level: 'N3', pattern: '〜の末に', meaning: 'at the end of...', bn: 'শেষে / ফলে', explanation: 'Result after long process', examples: [{ jp: '悩んだ末に', romaji: 'nayanda sue ni', en: 'at the end of much worrying' }] },
-  { id: 'n3g60', level: 'N3', pattern: '〜のみならず', meaning: 'not only...', bn: 'শুধু নয়', explanation: 'Formal addition', examples: [{ jp: '日本のみならず', romaji: 'Nihon nominarazu', en: 'not only Japan' }] },
-  { id: 'n3g61', level: 'N3', pattern: '〜もかまわず', meaning: 'without caring about...', bn: 'পরোয়া না করে', explanation: 'Ignoring circumstances', examples: [{ jp: '人目もかまわず', romaji: 'hitome mo kamawazu', en: 'without caring about people\'s gaze' }] },
-  { id: 'n3g62', level: 'N3', pattern: '〜ものがある', meaning: 'there is something... (feels like)', bn: 'কিছু একটা আছে', explanation: 'Indescribable feeling', examples: [{ jp: '感じるものがある', romaji: 'kanjiru mono ga aru', en: 'there is something that I feel' }] },
-  { id: 'n3g63', level: 'N3', pattern: '〜ものなら', meaning: 'if ... could ... (but can\'t)', bn: 'যদি পারতাম', explanation: 'Impossible condition', examples: [{ jp: '帰れるものなら', romaji: 'kaereru mono nara', en: 'if I could return' }] },
-  { id: 'n3g64', level: 'N3', pattern: '〜んばかりだ', meaning: 'as if about to...', bn: 'প্রায় এখনই', explanation: 'State on the verge of action', examples: [{ jp: '泣き出さんばかりだ', romaji: 'nakidasan bakari da', en: 'as if about to burst into tears' }] },
-  { id: 'n3g65', level: 'N3', pattern: '〜切る', meaning: 'to do completely', bn: 'পুরোপুরি শেষ করা', explanation: 'Exhaustive action', examples: [{ jp: '信じ切っている', romaji: 'shinjikitte iru', en: 'believing completely' }] },
-  { id: 'n3g66', level: 'N3', pattern: '〜ぬく', meaning: 'to do through to the end', bn: 'শেষ পর্যন্ত করা', explanation: 'Perseverance till end', examples: [{ jp: '走りぬく', romaji: 'hashirinuku', en: 'run to the very end' }] },
-  { id: 'n3g67', level: 'N3', pattern: '〜得る', meaning: 'can / is possible', bn: 'সম্ভব', explanation: 'Potentiality', examples: [{ jp: 'あり得る話', romaji: 'ariuru hanashi', en: 'a possible story' }] },
-  { id: 'n3g68', level: 'N3', pattern: '〜がたい', meaning: 'difficult to...', bn: 'কঠিন', explanation: 'Psychological difficulty', examples: [{ jp: '信じがたい', romaji: 'shinjigatai', en: 'hard to believe' }] },
-  { id: 'n3g69', level: 'N3', pattern: '〜かねない', meaning: 'might happen (negative)', bn: 'হয়ে যেতে পারে (খারাপ)', explanation: 'Risk of negative outcome', examples: [{ jp: '事故になりかねない', romaji: 'jiko ni narikanenai', en: 'could lead to an accident' }] },
-  { id: 'n3g70', level: 'N3', pattern: '〜かねる', meaning: 'cannot / find it hard to...', bn: 'পারি না (বিনম্র)', explanation: 'Polite refusal', examples: [{ jp: '賛成しかねる', romaji: 'sansei shikaneru', en: 'cannot agree' }] },
-  { id: 'n3g71', level: 'N3', pattern: '〜からには', meaning: 'now that...', bn: 'যেহেতু', explanation: 'Strong determination based on fact', examples: [{ jp: '約束したからには', romaji: 'yakusoku shita kara ni wa', en: 'now that I promised' }] },
-  { id: 'n3g72', level: 'N3', pattern: '〜ことなしに', meaning: 'without doing...', bn: 'ব্যতীত', explanation: 'Formal exclusion of action', examples: [{ jp: '努力することなしに', romaji: 'doryoku suru koto nashi ni', en: 'without making an effort' }] },
-  { id: 'n3g73', level: 'N3', pattern: '〜次第だ', meaning: 'it depends on... / it is because...', bn: 'নির্ভর করে / কারণ', explanation: 'Explanation of outcome', examples: [{ jp: 'あなた次第だ', romaji: 'anata shidai da', en: 'it depends on you' }] },
-  { id: 'n3g74', level: 'N3', pattern: '〜ないまでも', meaning: 'even if not ... at least ...', bn: 'না হলেও অন্তত', explanation: 'Lowering expectations', examples: [{ jp: '完璧ではないまでも', romaji: 'kanpeki de wa nai mademo', en: 'even if it\'s not perfect' }] },
-  { id: 'n3g75', level: 'N3', pattern: '〜のみ', meaning: 'only ...', bn: 'কেবল', explanation: 'Formal limitation', examples: [{ jp: 'これのみ', romaji: 'kore nomi', en: 'only this' }] },
-  { id: 'n3g76', level: 'N3', pattern: '〜反面', meaning: 'on the other hand', bn: 'অন্যদিকে', explanation: 'Contrast within same subject', examples: [{ jp: '便利な反面', romaji: 'benri na hanmen', en: 'convenient but on the other hand...' }] },
-  { id: 'n3g77', level: 'N3', pattern: '〜べきだ', meaning: 'should / must...', bn: 'উচিত', explanation: 'Moral duty', examples: [{ jp: '勉強すべきだ', romaji: 'benkyou subeki da', en: 'should study' }] },
-  { id: 'n3g78', level: 'N3', pattern: '〜まい', meaning: 'probably not / will not', bn: 'হয়তো না / করব না', explanation: 'Casual negative conjecture/volition', examples: [{ jp: '二度と行くまい', romaji: 'nidoto ikumai', en: 'will never go again' }] },
-  { id: 'n3g79', level: 'N3', pattern: '〜向きだ', meaning: 'is suitable for...', bn: 'উপযুক্ত', explanation: 'Suitability', examples: [{ jp: '夏向きの服', romaji: 'natsu muki no fuku', en: 'clothes suitable for summer' }] },
-  { id: 'n3g80', level: 'N3', pattern: '〜向けだ', meaning: 'is intended for...', bn: 'উদ্দেশ্যে তৈরিকৃত', explanation: 'Intended target', examples: [{ jp: '海外向けの製品', romaji: 'kaigai muke no seihin', en: 'product intended for overseas' }] },
-  { id: 'n3g81', level: 'N3', pattern: '〜もとより', meaning: 'not to mention...', bn: 'বলা বাহুল্য', explanation: 'Self-evident addition', examples: [{ jp: '家はもとより', romaji: 'ie wa motoyori', en: 'not to mention the house...' }] },
-  { id: 'n3g82', level: 'N3', pattern: '〜わけだ', meaning: 'no wonder / that\'s why...', bn: 'স্বাভাবিকভাবেই', explanation: 'Logical conclusion', examples: [{ jp: '夜に降ったわけだ', romaji: 'yoru ni futta wake da', en: 'no wonder it rained at night' }] },
-  { id: 'n3g83', level: 'N3', pattern: '〜をきっかけに', meaning: 'taking ... as a start', bn: 'সূত্রপাতে', explanation: 'Trigger for change', examples: [{ jp: 'アニメをきっかけに', romaji: 'anime wo kikkake ni', en: 'taking anime as a starting point' }] },
-  { id: 'n3g84', level: 'N3', pattern: '〜を通じ（て）', meaning: 'through / throughout', bn: 'মাধ্যমে / জুড়ে', explanation: 'Medium or span', examples: [{ jp: '一年を通じて', romaji: 'ichinen wo tsuujite', en: 'throughout the year' }] },
-  { id: 'n3g85', level: 'N3', pattern: '〜を巡って', meaning: 'surrounding / concerning (dispute)', bn: 'কেন্দ্র করে', explanation: 'Subject of controversy', examples: [{ jp: '遺産を巡って', romaji: 'isan wo megutte', en: 'concerning the inheritance' }] },
-  { id: 'n3g86', level: 'N3', pattern: '〜をおいて他にない', meaning: 'there is no other than...', bn: 'ছাড়া আর নেই', explanation: 'Uniqueness/Superiority', examples: [{ jp: 'あなたをおいて他にない', romaji: 'anata wo oite hoka ni nai', en: 'there is no one but you' }] },
-  { id: 'n3g87', level: 'N3', pattern: '〜を問わず', meaning: 'regardless of...', bn: 'নির্বিশেষে', explanation: 'No restriction', examples: [{ jp: '年齢を問わず', romaji: 'nenrei wo towazu', en: 'regardless of age' }] },
-  { id: 'n3g88', level: 'N3', pattern: '〜を基に', meaning: 'based on...', bn: 'ভিত্তিতে', explanation: 'Using as material', examples: [{ jp: '事実を基に', romaji: 'jijitsu wo moto ni', en: 'based on the facts' }] },
-  { pattern: '〜はともかく', meaning: 'Setting aside...', bn: 'বাদ দিয়ে', explanation: 'Prioritizing something else', examples: [{ jp: '結果はともかく', romaji: 'kekka wa tomokaku', en: 'setting aside the results' }] },
-  { pattern: '〜はずだ', meaning: 'Should be... / Expected to...', bn: 'হওয়ার কথা', explanation: 'Strong expectation', examples: [{ jp: '来るはずだ', romaji: 'kuru hazu da', en: 'should be coming' }] },
-  { pattern: '〜はずがない', meaning: 'Cannot be... / Impossible', bn: 'হওয়া অসম্ভব', explanation: 'Strong denial of expectation', examples: [{ jp: '知らないはずがない', romaji: 'shiranai hazu ga nai', en: 'there is no way they don\'t know' }] },
-  { pattern: '〜べきだ', meaning: 'Should / Ought to', bn: 'উচিত', explanation: 'Moral obligation', examples: [{ jp: '言うべきだ', romaji: 'iu beki da', en: 'one should say it' }] },
-  { pattern: '〜べきではない', meaning: 'Should not...', bn: 'উচিত নয়', explanation: 'Prohibition/advice against', examples: [{ jp: '忘れるべきではない', romaji: 'wasureru beki de wa nai', en: 'one should not forget' }] },
-  { pattern: '〜ほか（は）ない', meaning: 'No choice but to...', bn: 'এছাড়া উপায় নেই', explanation: 'Sole option', examples: [{ jp: 'やるほかない', romaji: 'yaru hoka nai', en: 'nothing to do but do it' }] },
-  { pattern: '〜ほど', meaning: 'To the extent that...', bn: 'পর্যন্ত / মতো', explanation: 'Degree or comparison', examples: [{ jp: '泣くほど嬉しい', romaji: 'naku hodo ureshii', en: 'so happy I could cry' }] },
-  { pattern: '〜ほど〜ない', meaning: 'Not as ... as ...', bn: 'মতো নয়', explanation: 'Comparison of degree', examples: [{ jp: '昨日ほど寒くない', romaji: 'kinou hodo samukunai', en: 'it is not as cold as yesterday' }] },
-  { pattern: '〜まい', meaning: 'Probably not / Will not', bn: 'মনে হয় না / হবে না', explanation: 'Negative intent or probability', examples: [{ jp: '二度と行くまい', romaji: 'nido to iku mai', en: 'I will probably not go again' }] },
-  { pattern: '〜向きだ', meaning: 'Suitable for...', bn: 'উপযোগী', explanation: 'Natural fitness', examples: [{ jp: '初心者向きだ', romaji: 'shoshinsha muki da', en: 'it is suitable for beginners' }] },
-  { pattern: '〜向けに', meaning: 'Made for...', bn: 'জন্য তৈরিকৃত', explanation: 'Specific intention', examples: [{ jp: '輸出向けに', romaji: 'yushutsu muke ni', en: 'made for export' }] },
-  { pattern: '〜も〜ば〜も', meaning: 'Both ... and ...', bn: '...ও ...ও', explanation: 'Inclusion of multiple items', examples: [{ jp: '金もあれば暇もある', romaji: 'kane mo areba hima mo aru', en: 'has both money and free time' }] },
-  { pattern: '〜もしない', meaning: 'Doesn\'t even...', bn: 'এমনকি করে না', explanation: 'Emphatic negative action', examples: [{ jp: '挨拶もしない', romaji: 'aisatsu mo shinai', en: 'doesn\'t even say hello' }] },
-  { pattern: '〜ものか', meaning: 'Definitely not / No way', bn: 'মোটেই না', explanation: 'Strong emotional denial', examples: [{ jp: '負けるものか', romaji: 'makeru mono ka', en: 'I definitely won\'t lose' }] },
-  { pattern: '〜ものだ', meaning: 'Naturally... / Used to...', bn: 'স্বাভাবিকভাবেই / অভ্যস্ত ছিলাম', explanation: 'General truth or past habit', examples: [{ jp: '子供は元気なものだ', romaji: 'kodomo wa genki na mono da', en: 'children are naturally energetic' }] },
-  { pattern: '〜ものだから', meaning: 'Because... (excuse)', bn: 'কারণ (অজুহাত)', explanation: 'Reason for unexpected result', examples: [{ jp: '忙しかったものだから', romaji: 'isogashikatta mono da kara', en: 'it\'s just that I was busy...' }] },
-  { pattern: '〜ものではない', meaning: 'Should not (social rule)', bn: 'করতে নেই / উচিত নয়', explanation: 'Social/moral prohibition', examples: [{ jp: '嘘をつくものではない', romaji: 'uso wo tsuku mono de wa nai', en: 'one should not tell lies' }] },
-  { pattern: '〜ものなら', meaning: 'If only I could...', bn: 'যদি পারতাম', explanation: 'Wish for impossibility', examples: [{ jp: '帰れるものなら', romaji: 'kaereru mono nara', en: 'if only I could go back' }] },
-  { pattern: '〜ものがある', meaning: 'There is a sense of...', bn: 'কিছু একটা ব্যাপার আছে', explanation: 'Describes a quality/feeling', examples: [{ jp: '光るものがある', romaji: 'hikaru mono ga aru', en: 'there is something brilliant (about it)' }] },
-  { pattern: '〜もん', meaning: 'Because... (casual)', bn: 'কারণ (আঞ্চলিক/অনানুষ্ঠানিক)', explanation: 'Casual emphasis on reason', examples: [{ jp: '嫌いだもん', romaji: 'kirai da mon', en: 'because I hate it' }] },
-  { pattern: '〜わけだ', meaning: 'Naturally... / No wonder...', bn: 'স্বাভাবিকভাবেই / এই কারণে', explanation: 'Logical conclusion', examples: [{ jp: '寒い wake da', romaji: 'samui wake da', en: 'no wonder it is cold' }] },
-  { pattern: '〜わけがない', meaning: 'There is no way that...', bn: 'হওয়া অসম্ভব', explanation: 'Logical impossibility', examples: [{ jp: '嘘なわけがない', romaji: 'uso na wake ga nai', en: 'there is no way it is a lie' }] },
-  { pattern: '〜わけではない', meaning: 'It doesn\'t mean that...', bn: 'তার মানে এই নয় যে', explanation: 'Partial negation', examples: [{ jp: '嫌いなわけではない', romaji: 'kirai na wake de wa nai', en: 'it doesn\'t mean I hate it' }] },
-  { pattern: '〜を〜として', meaning: 'As ... / For the purpose of ...', bn: 'হিসেবে / উদ্দেশ্যে', explanation: 'Designating a role', examples: [{ jp: '趣味を仕事として', romaji: 'shumi wo shigoto toshite', en: 'having a hobby as a job' }] },
-  { pattern: '〜をきっかけに', meaning: 'Using ... as a trigger', bn: 'ফলে / উপলক্ষে', explanation: 'Starting point of change', examples: [{ jp: '就職をきっかけに', romaji: 'shuushoku wo kikkake ni', en: 'using finding a job as a trigger' }] },
-  { pattern: '〜をこめて', meaning: 'With all one\'s...', bn: 'দিয়ে (মন/হৃদয়)', explanation: 'Action with deep feeling', examples: [{ jp: '愛をこめて', romaji: 'ai wo komete', en: 'with all my love' }] },
-  { pattern: '〜を中心に', meaning: 'Centering on...', bn: 'কেন্দ্রে রেখে', explanation: 'Primary focus', examples: [{ jp: '若者を中心に', romaji: 'wakamono wo chuushin ni', en: 'centering on young people' }] },
-  { pattern: '〜を頼りに', meaning: 'Relying on...', bn: 'ভরসা করে', explanation: 'Basis of support', examples: [{ jp: '地図を頼りに', romaji: 'chizu wo tayori ni', en: 'relying on the map' }] },
-  { pattern: '〜を問わず', meaning: 'Regardless of...', bn: 'নির্বিশেষে', explanation: 'Universal application', examples: [{ jp: '年齢を問わず', romaji: 'nenrei wo towazu', en: 'regardless of age' }] },
-  { pattern: '〜をめぐって', meaning: 'Surrounding / Concerning', bn: 'কেন্দ্র করে / নিয়ে', explanation: 'Conflict or debate topic', examples: [{ jp: 'その噂をめぐって', romaji: 'sono uwasa wo megutte', en: 'surrounding that rumor' }] }
-];
-
-export const N2_GRAMMAR = [
-  { pattern: '〜あげく', meaning: 'In the end', bn: 'শেষ পর্যন্ত', explanation: 'Negative result after long process', examples: [{ jp: '悩んだあげく', romaji: 'nayanda ageku', en: 'after much worrying' }] },
-  { pattern: '〜あまり', meaning: 'Too much', bn: 'খুব বেশি', explanation: 'Extreme degree', examples: [{ jp: '心配のあまり', romaji: 'shinpai no amari', en: 'due to excessive worry' }] },
-  { pattern: '〜以上は', meaning: 'Since / Now that...', bn: 'যেহেতু', explanation: 'Responsibility because of situation', examples: [{ jp: '約束した以上は', romaji: 'yakusoku shita ijou wa', en: 'since you promised' }] },
-  { pattern: '〜おそれがある', meaning: 'Fear that...', bn: 'ভয় আছে যে', explanation: 'Negative possibility', examples: [{ jp: '噴火のおそれがある', romaji: 'funka no osore ga aru', en: 'fear of eruption' }] },
-  { pattern: '〜かわりに', meaning: 'Instead of', bn: 'পরিবর্তে', explanation: 'Substitution', examples: [{ jp: '代わりに行く', romaji: 'kawari ni iku', en: 'go instead' }] },
-  { pattern: '〜切る', meaning: 'To do completely', bn: 'পুরোপুরি করা', explanation: 'Completion', examples: [{ jp: '使い切る', romaji: 'tsukaikiru', en: 'use up' }] },
-  { pattern: '〜から〜にかけて', meaning: 'From ... to ...', bn: 'থেকে ... পর্যন্ত', explanation: 'Span of time or space', examples: [{ jp: '明日から明後日にかけて', romaji: 'ashita kara asatte ni kakete', en: 'from tomorrow through today' }] },
-  { pattern: '〜からいうと', meaning: 'From the standpoint of', bn: 'দৃষ্টিভিকোণ থেকে', explanation: 'Evaluation perspective', examples: [{ jp: '実力からいうと', romaji: 'jitsuryoku kara iu to', en: 'from the perspective of ability' }] },
-  { pattern: '〜からして', meaning: 'Judging from', bn: 'থেকে বিচার করলে', explanation: 'Basis for judgment', examples: [{ jp: 'タイトルからして', romaji: 'taitoru kara shite', en: 'judging from the title' }] },
-  { pattern: '〜からには', meaning: 'Now that / Since', bn: 'যেহেতু', explanation: 'Responsibility or determination', examples: [{ jp: 'やるからには', romaji: 'yaru kara ni wa', en: 'now that I am doing it' }] },
-  { pattern: '〜ながらも', meaning: 'Even though / While', bn: 'সত্ত্বেও', explanation: 'Contradiction', examples: [{ jp: '残念ながらも', romaji: 'zannen nagara mo', en: 'while regrettable' }] },
-  { pattern: '〜にかけては', meaning: 'When it comes to...', bn: 'বিষয়ে যখন আসে', explanation: 'Expertise in a field', examples: [{ jp: '料理にかけては', romaji: 'ryouri ni kakete wa', en: 'when it comes to cooking' }] },
-  { pattern: '〜に際して', meaning: 'On the occasion of', bn: 'উপলক্ষে', explanation: 'Formal initiation', examples: [{ jp: '開店に際して', romaji: 'kaiten ni saishite', en: 'on the occasion of opening' }] },
-  { pattern: '〜に先立って', meaning: 'Prior to', bn: 'আগে', explanation: 'Before an event', examples: [{ jp: '公開に先立って', romaji: 'koukai ni sakidatte', en: 'prior to the public release' }] },
-  { pattern: '〜にたえない', meaning: 'Cannot bear / Overwhelmed with', bn: 'অসহ্য / অভিভূত', explanation: 'Unbearable feeling or extreme emotion', examples: [{ jp: '感謝 ni taemasen', romaji: 'kansha ni taemasen', en: 'I am overwhelmed with gratitude' }] },
-  { pattern: '〜にこたえて', meaning: 'In response to...', bn: 'প্রত্যুত্তরে', explanation: 'Responding to expectations/requests', examples: [{ jp: '期待にこたえて', romaji: 'kitai ni kotaete', en: 'in response to expectations' }] },
-  { pattern: '〜にともなって', meaning: 'Along with / Accompanying', bn: 'সাথে সাথে', explanation: 'Simultaneous occurrence', examples: [{ jp: '発展にともなって', romaji: 'hatten ni tomonatte', en: 'along with development' }] },
-  { pattern: '〜にほかならない', meaning: 'Nothing but / Precisely because', bn: 'অন্য কিছু নয়', explanation: 'Highlighting the true reason', examples: [{ jp: '努力の結果にほかならない', romaji: 'doryoku no kekka ni hokanaranai', en: 'it is nothing but the result of effort' }] },
-  { pattern: '〜にわたって', meaning: 'Throughout / Across', bn: 'জুড়ে', explanation: 'Span of time/space', examples: [{ jp: '三日間にわたって', romaji: 'mikkakan ni watatte', en: 'throughout three days' }] },
-  { pattern: '〜ぬ', meaning: 'Not (archaic/formal)', bn: 'না (প্রাচীন রূপ)', explanation: 'Formal negation', examples: [{ jp: '知らぬ', romaji: 'shiranu', en: 'not know' }] },
-  { pattern: '〜ぬきで', meaning: 'Without / Leaving out', bn: 'ছাড়া', explanation: 'Excluding something', examples: [{ jp: '朝食ぬきで', romaji: 'choushoku nuki de', en: 'without breakfast' }] },
-  { pattern: '〜のみならず', meaning: 'Not only...', bn: 'শুধু নয়...', explanation: 'Formal "not only"', examples: [{ jp: '彼のみならず', romaji: 'kare nomi narazu', en: 'not only him' }] },
-  { pattern: '〜のもとで', meaning: 'Under...', bn: 'অধীনে', explanation: 'Under guidance or condition', examples: [{ jp: '先生のもとで', romaji: 'sensei no moto de', en: 'under the teacher\'s guidance' }] },
-  { pattern: '〜ば〜ほど', meaning: 'The more ... the more ...', bn: 'যত ... তত ...', explanation: 'Proportional progression', examples: [{ jp: '見れば見るほど', romaji: 'mireba miru hodo', en: 'the more I look, the more ...' }] },
-  { pattern: '〜ばかりか', meaning: 'Not only ... but also', bn: 'শুধু নয় ... আরও', explanation: 'Addition of emphasis', examples: [{ jp: '日本人ばかりか', romaji: 'nihonjin bakari ka', en: 'not only Japanese people' }] },
-  { pattern: '〜ばかりに', meaning: 'Just because...', bn: 'স্রেফ কারণে', explanation: 'Negative result caused by one factor', examples: [{ jp: '嘘をついたばかりに', romaji: 'uso wo tsuita bakari ni', en: 'just because I lied (negative outcome)' }] },
-  { pattern: '〜はともかく', meaning: 'Setting aside...', bn: 'অন্য কিছু বাদ দিয়ে', explanation: 'Focusing on something else', examples: [{ jp: '味はともかく', romaji: 'aji wa tomokaku', en: 'setting aside the taste' }] },
-  { pattern: '〜ばよかった', meaning: 'Should have...', bn: 'করলে ভালো হতো', explanation: 'Regret about past', examples: [{ jp: '買えばよかった', romaji: 'kaeba yokatta', en: 'I should have bought it' }] },
-  { pattern: '〜はもちろん', meaning: 'Needless to say / Of course', bn: 'বলা বাহুল্য', explanation: 'Obvious inclusion', examples: [{ jp: 'ひらがなはもちろん', romaji: 'hiragana wa mochiron', en: 'of course hiragana' }] },
-  { pattern: '〜べきだ', meaning: 'Should / Ought to', bn: 'উচিত', explanation: 'Moral or social obligation', examples: [{ jp: '勉強するべきだ', romaji: 'benkyou suru beki da', en: 'one should study' }] },
-  { pattern: '〜まい', meaning: 'Probably not / Will not', bn: 'হবে না / বোধহয় না', explanation: 'Negative intention or probability', examples: [{ jp: '二度と行くまい', romaji: 'nido to iku mai', en: 'I will probably not go again' }] },
-  { pattern: '〜向きだ', meaning: 'Suitable for...', bn: 'উপযোগী', explanation: 'Natural suitability', examples: [{ jp: '女性向きだ', romaji: 'joseimuki da', en: 'suitable for women' }] },
-  { pattern: '〜向けだ', meaning: 'Intended for...', bn: 'জন্য তৈরিকৃত', explanation: 'Calculated intention', examples: [{ jp: '輸出向けだ', romaji: 'yushutsu muke da', en: 'intended for export' }] },
-  { pattern: '〜もとより', meaning: 'From the start / Of course', bn: 'শুরু থেকেই / অবশ্যই', explanation: 'Needless to say', examples: [{ jp: '彼はもとより', romaji: 'kare wa motoyori', en: 'of course him / him from the start' }] },
-  { pattern: '〜ものか', meaning: 'No way! / Definitely not', bn: 'মোটেই নয়!', explanation: 'Strong emphatic denial', examples: [{ jp: '負けるものか', romaji: 'makeru mono ka', en: 'I won\'t lose!' }] },
-  { pattern: '〜ものだ', meaning: 'Naturally... / Used to...', bn: 'স্বাভাবিকভাবেই / অভ্যস্ত ছিলাম', explanation: 'General truth or past habit', examples: [{ jp: '子供は遊ぶものだ', romaji: 'kodomo wa asobu mono da', en: 'children are supposed to play' }] },
-  { pattern: '〜ものなら', meaning: 'If only one could...', bn: 'যদি পারতাম', explanation: 'Hypothetical desire for difficulty', examples: [{ jp: '帰れるものなら', romaji: 'kaereru mono nara', en: 'if only I could return' }] },
-  { pattern: '〜ものがある', meaning: 'There is something about...', bn: 'কিছু একটা ব্যাপার আছে', explanation: 'Indescribable feeling', examples: [{ jp: '感動するものがある', romaji: 'kandou suru mono ga aru', en: 'there is something deeply moving' }] },
-  { pattern: '〜ものだから', meaning: 'Because / Since (excuse)', bn: 'কারণ (অজুহাত)', explanation: 'Explaining a reason or cause', examples: [{ jp: '忙しかったものだから', romaji: 'isogashikatta mono da kara', en: 'because I was busy (you see ...)' }] },
-  { pattern: '〜わけがない', meaning: 'There is no way that...', bn: 'হওয়া অসম্ভব', explanation: 'Absolute logical denial', examples: [{ jp: '犯人のわけがない', romaji: 'hannin no wake ga nai', en: 'there is no way they are the culprit' }] },
-  { pattern: '〜わけにはいかない', meaning: 'Cannot afford to...', bn: 'সম্ভব নয় (নৈতিকভাবে)', explanation: 'Moral impossibility', examples: [{ jp: '休むわけにはいかない', romaji: 'yasumu wake ni wa ikanai', en: 'cannot afford to rest' }] },
-  { pattern: '〜をきっかけに', meaning: 'As a result of...', bn: 'এর ফলে', explanation: 'Trigger for change', examples: [{ jp: '卒業をきっかけに', romaji: 'sotsugyou wo kikkake ni', en: 'as a result of graduation' }] },
-  { pattern: '〜をこめて', meaning: 'With all one\'s...', bn: 'মন দিয়ে', explanation: 'Putting one\'s heart into it', examples: [{ jp: '愛をこめて', romaji: 'ai wo komete', en: 'with love' }] },
-  { pattern: '〜を中心にして', meaning: 'Centering on...', bn: 'কেন্দ্রীভূত করে', explanation: 'Focusing primarily on', examples: [{ jp: '彼を中心にして', romaji: 'kare wo chuushin ni shite', en: 'centering around him' }] },
-  { pattern: '〜を通じ（て）', meaning: 'Through / Via', bn: 'মাধ্যমে', explanation: 'Process or medium', examples: [{ jp: '友だちを通じて', romaji: 'tomodachi wo tsuujite', en: 'through a friend' }] },
-  { pattern: '〜を問わず', meaning: 'Regardless of...', bn: 'নির্বিশেষে', explanation: 'Universal application', examples: [{ jp: '男女を問わず', romaji: 'danjo wo towazu', en: 'regardless of gender' }] },
-  { pattern: '〜をはじめ（として）', meaning: 'Starting with...', bn: 'শুরুতেই', explanation: 'Primary representative example', examples: [{ jp: '社長をはじめ', romaji: 'shachou wo hajime', en: 'starting with the president' }] },
-  { pattern: '〜をもとに（して）', meaning: 'Based on...', bn: 'ভিত্তি করে', explanation: 'Source material', examples: [{ jp: '事実をもとにして', romaji: 'jijitsu wo moto ni shite', en: 'based on facts' }] },
-  { pattern: '〜にあたって', meaning: 'At the time of / On the occasion of', bn: 'উপলক্ষে', explanation: 'Preparation for important event', examples: [{ jp: '開店にあたって', romaji: 'kaiten ni atatte', en: 'on the occasion of the shop opening' }] },
-  { pattern: '〜にしろ〜にしろ', meaning: 'Whether ... or ...', bn: 'হোক ... বা ...', explanation: 'Multiple possibilities', examples: [{ jp: '行くにしろ行かないにしろ', romaji: 'iku ni shiro ikanai ni shiro', en: 'whether you go or don\'t go' }] },
-  { pattern: '〜にしたら', meaning: 'From the perspective of...', bn: 'কাছে / দিক থেকে', explanation: 'Someone else\'s viewpoint', examples: [{ jp: '親にしたら', romaji: 'oya ni shitara', en: 'from the parents\' perspective' }] },
-  { pattern: '〜にすぎない', meaning: 'Nothing more than / Just', bn: 'স্রেফ / মাত্র', explanation: 'Limitation of degree/value', examples: [{ jp: '冗談にすぎない', romaji: 'joudan ni suginai', en: 'it is just a joke' }] },
-  { pattern: '〜に即して', meaning: 'In accordance with / Based on', bn: 'অনুসারে', explanation: 'Conforming to facts/rules', examples: [{ jp: '事実に即して', romaji: 'jijitsu ni sokushite', en: 'based on the facts' }] },
-  { pattern: '〜にたえる', meaning: 'Worth ...ing / Bearable', bn: 'উপযুক্ত / সহ্য করার মতো', explanation: 'Value or durability', examples: [{ jp: '鑑賞にたえる', romaji: 'kanshou ni taeru', en: 'worth watching' }] },
-  { pattern: '〜に足る', meaning: 'Be worth / Be sufficient', bn: 'যোগ্য / যথেষ্ট', explanation: 'Deserving of something', examples: [{ jp: '信頼に足る', romaji: 'shinrai ni taru', en: 'worth trusting' }] },
-  { pattern: '〜のみならず', meaning: 'Not only...', bn: 'শুধু নয়', explanation: 'Addition (formal)', examples: [{ jp: '彼のみならず', romaji: 'kare nomi narazu', en: 'not only him' }] },
-  { pattern: '〜ようがない', meaning: 'No way to...', bn: 'উপায় নেই', explanation: 'Physical/technical impossibility', examples: [{ jp: '直しようがない', romaji: 'naoshi you ga nai', en: 'no way to fix it' }] },
-  { pattern: '〜ようもない', meaning: 'No way to...', bn: 'উপায় নেই (দৃঢ়ভাবে)', explanation: 'Total impossibility', examples: [{ jp: '否定しようもない', romaji: 'hitei shiyou mo nai', en: 'no way to deny it' }] },
-  { pattern: '〜を皮切りに', meaning: 'Starting with...', bn: 'দিয়ে শুরু', explanation: 'Successive events starting from X', examples: [{ jp: '東京を皮切りに', romaji: 'Toukyou wo kawakiri ni', en: 'starting with Tokyo (tours etc.)' }] },
-  { pattern: '〜を限りに', meaning: 'As the last / Starting from now', bn: 'শেষবারের মতো', explanation: 'Termination or final point', examples: [{ jp: '今日を限りに', romaji: 'kyou wo kagiri ni', en: 'starting from today (ending a habit etc.)' }] },
-  { pattern: '〜を契機に', meaning: 'Using ... as an opportunity', bn: 'সুযোগ হিসেবে নিয়ে', explanation: 'Turning point', examples: [{ jp: '病気を契機に', romaji: 'byouki wo keiki ni', en: 'using illness as a turning point (to stop smoking etc.)' }] },
-  { pattern: '〜を抜きにして', meaning: 'Setting aside...', bn: 'বাদ দিয়ে', explanation: 'Excluding for the moment', examples: [{ jp: '冗談を抜きにして', romaji: 'joudan wo nuki ni shite', en: 'setting jokes aside' }] },
-  { pattern: '〜をものともせずに', meaning: 'Defying...', bn: 'উপেক্ষা করে', explanation: 'Overcoming obstacles', examples: [{ jp: '困難をものともせずに', romaji: 'konnan wo mono to mo sezu ni', en: 'defying difficulties' }] },
-  { pattern: '〜をよそに', meaning: 'Indifferent to...', bn: 'পাত্তা না দিয়ে', explanation: 'Ignoring surroundings', examples: [{ jp: '親の心配をよそに', romaji: 'oya no shinpai wo yoso ni', en: 'indifferent to parents\' worries' }] },
-  { pattern: '〜際（に）', meaning: 'When / On the occasion of', bn: 'সময়', explanation: 'Formal when', examples: [{ jp: '帰国の際', romaji: 'kikoku no sai', en: 'on the occasion of returning' }] },
-  { pattern: '〜次第', meaning: 'As soon as', bn: 'সরাসরি পরে', explanation: 'Immediate next step', examples: [{ jp: '決まり次第', romaji: 'kimari shidai', en: 'as soon as decided' }] },
-  { pattern: '〜たび', meaning: 'Every time', bn: 'প্রতিবার', explanation: 'Whenever', examples: [{ jp: '会うたびに', romaji: 'au tabi ni', en: 'every time we meet' }] },
-  { pattern: '〜だらけ', meaning: 'Full of', bn: 'ভর্তি', explanation: 'Covered in', examples: [{ jp: '間違いだらけ', romaji: 'machigai darake', en: 'full of mistakes' }] },
-  { pattern: '〜ついでに', meaning: 'While at it', bn: 'সুযোগ বুঝে', explanation: 'Incidental action', examples: [{ jp: '買い物のついでに', romaji: 'kaimono no tsuide ni', en: 'while shopping' }] },
-  { pattern: '〜にすぎない', meaning: 'Nothing more than...', bn: 'বেশি কিছু নয়', explanation: 'Limitation', examples: [{ jp: '単なる噂にすぎない', romaji: 'tannaru uwasa ni suginai', en: 'nothing more than a rumor' }] },
-  { pattern: '〜ぬ', meaning: 'Negative (official/archaic)', bn: 'না (আনুষ্ঠানিক)', explanation: 'Old negative form', examples: [{ jp: '知らぬ存ぜぬ', romaji: 'shiranu zonzenu', en: 'know nothing' }] },
-  { pattern: '〜のみならず', meaning: 'Not only...', bn: 'শুধু নয়', explanation: 'Formal addition', examples: [{ jp: '国内のみならず', romaji: 'kokunai nomi narazu', en: 'not only domestically' }] },
-  { pattern: '〜ものなら', meaning: 'If one could...', bn: 'যদি পারতাম', explanation: 'Unlikely hypothesis', examples: [{ jp: '戻れるものなら', romaji: 'modoreru mono nara', en: 'if I could go back' }] }
-];
-
-// ==================== SENTENCES FOR PRACTICE ====================
-export const PRACTICE_SENTENCES = [
-  { jp: 'はじめまして。', romaji: 'Hajimemashite.', en: 'Nice to meet you.', bn: 'আপনার সাথে দেখা করে ভালো লাগলো।', level: 'N5' },
-  { jp: 'どうぞよろしくお願いします。', romaji: 'Douzo yoroshiku onegaishimasu.', en: 'Please treat me well.', bn: 'দয়া করে আমার সাথে সুসম্পর্ক রাখবেন।', level: 'N5' },
-  { jp: 'お元気ですか。', romaji: 'O genki desu ka.', en: 'How are you?', bn: 'আপনি কেমন আছেন?', level: 'N5' },
-  { jp: '今日は何曜日ですか。', romaji: 'Kyou wa nan youbi desu ka.', en: 'What day is today?', bn: 'আজ কী বার?', level: 'N5' },
-  { jp: '今、何時ですか。', romaji: 'Ima, nanji desu ka.', en: 'What time is it now?', bn: 'এখন কয়টা বাজে?', level: 'N5' },
-  { jp: '日本語を勉強しています。', romaji: 'Nihongo wo benkyou shite imasu.', en: 'I am studying Japanese.', bn: 'আমি জাপানি ভাষা শিখছি।', level: 'N5' },
-  { jp: 'お名前は何ですか。', romaji: 'O namae wa nan desu ka.', en: 'What is your name?', bn: 'আপনার নাম কী?', level: 'N5' },
-  { jp: 'どこから来ましたか。', romaji: 'Doko kara kimashita ka.', en: 'Where did you come from?', bn: 'আপনি কোথা থেকে এসেছেন?', level: 'N5' },
-  { jp: '趣味は何ですか。', romaji: 'Shumi wa nan desu ka.', en: 'What is your hobby?', bn: 'আপনার শখ কী?', level: 'N5' },
-  { jp: 'この本はいくらですか。', romaji: 'Kono hon wa ikura desu ka.', en: 'How much is this book?', bn: 'এই বইটির দাম কত?', level: 'N5' },
-  { jp: '駅はどこですか。', romaji: 'Eki wa doko desu ka.', en: 'Where is the station?', bn: 'স্টেশনটি কোথায়?', level: 'N5' },
-  { jp: 'トイレはどこですか。', romaji: 'Toire wa doko desu ka.', en: 'Where is the toilet?', bn: 'টয়লেট কোথায়?', level: 'N5' },
-  { jp: 'すみません、ちょっと待ってください。', romaji: 'Sumimasen, chotto matte kudasai.', en: 'Excuse me, please wait a moment.', bn: 'মাফ করবেন, দয়া করে একটু অপেক্ষা করুন।', level: 'N5' },
-  { jp: 'もう一度言ってください。', romaji: 'Mou ichido itte kudasai.', en: 'Please say it one more time.', bn: 'দয়া করে আরেকবার বলুন।', level: 'N5' },
-  { jp: 'ゆっくり話してください。', romaji: 'Yukkuri hanashite kudasai.', en: 'Please speak slowly.', bn: 'দয়া করে ধীরে কথা বলুন।', level: 'N5' },
-  { jp: '明日、映画を見に行きませんか。', romaji: 'Ashita, eiga wo mi ni ikimasen ka.', en: 'Would you like to go see a movie tomorrow?', bn: 'আগামীকাল কি সিনেমা দেখতে যাবেন?', level: 'N5' },
-  { jp: '日本の料理が好きです。', romaji: 'Nihon no ryouri ga suki desu.', en: 'I like Japanese food.', bn: 'আমি জাপানি খাবার পছন্দ করি।', level: 'N5' },
-  { jp: '週末に何をしますか。', romaji: 'Shuumatsu ni nani wo shimasu ka.', en: 'What will you do on the weekend?', bn: 'সপ্তাহান্তে আপনি কী করবেন?', level: 'N5' },
-  { jp: '毎朝、六時に起きます。', romaji: 'Mai asa, rokuji ni okimasu.', en: 'I wake up at 6 every morning.', bn: 'আমি প্রতিদিন সকালে ছয়টায় উঠি।', level: 'N5' },
-  ...(MASSIVE_SENTENCES || []).map(s => ({
-    jp: s.jp,
-    romaji: s.romaji,
-    en: s.en,
-    bn: s.bn,
-    level: s.level
-  }))
-];
-
-// ==================== RANDOM PROFILE NAMES ====================
 export const RANDOM_NAMES = [
   'Sakura Learner', 'Tokyo Student', 'Kanji Master', 'Hiragana Hero', 'Nihon Explorer',
   'Japanese Seeker', 'Language Warrior', 'Study Ninja', 'Kana Champion', 'Culture Fan',
@@ -625,14 +54,12 @@ export const RANDOM_NAMES = [
   'Swift Wind', 'Calm Water', 'Bright Fire', 'Solid Earth', 'Pure Sky'
 ];
 
-// ==================== PROFILE AVATARS ====================
 export const AVATAR_EMOJIS = [
   '🌸', '🎌', '🗾', '🏯', '⛩️', '🎎', '🎏', '🍣', '🍱', '🍙',
   '🍜', '🍵', '🌺', '🌊', '🗻', '🐉', '🦊', '🐼', '🐱', '🐶',
   '🦁', '🐯', '🦅', '🌟', '💫', '⭐', '🌙', '☀️', '🔥', '💧'
 ];
 
-// ==================== LEVEL TITLES ====================
 export const LEVEL_TITLES = {
   1: 'Beginner',
   3: 'Novice',
@@ -649,7 +76,6 @@ export const LEVEL_TITLES = {
   100: 'Grandmaster'
 };
 
-// ==================== BADGES ====================
 export const BADGES = [
   { id: 'first_lesson', name: 'First Steps', icon: '👣', description: 'Complete your first lesson' },
   { id: 'hiragana_master', name: 'Hiragana Master', icon: 'あ', description: 'Learn all hiragana' },
@@ -663,66 +89,65 @@ export const BADGES = [
   { id: 'n5_ready', name: 'N5 Ready', icon: '🎯', description: 'Complete all N5 content' },
 ];
 
-export const N1_GRAMMAR = [
-  { id: 'n1g30', level: 'N1', pattern: '〜なりに', meaning: 'in one\'s own way', bn: 'নিজস্ব পদ্ধতিতে', explanation: 'Relative to one\'s ability', examples: [{ jp: '子供なりに考える', romaji: 'kodomo nari ni kangaeru', en: 'think in a child\'s own way' }] },
-  { id: 'n1g31', level: 'N1', pattern: '〜にあって', meaning: 'in / at / because of', bn: 'ক্ষেত্রে / কারণে', explanation: 'Being in a special situation', examples: [{ jp: 'この非常時にあって', romaji: 'kono hijouji ni atte', en: 'in this emergency situation' }] },
-  { id: 'n1g32', level: 'N1', pattern: '〜に至るまで', meaning: 'until / even to...', bn: 'পর্যন্ত / এমন কি', explanation: 'Reaching a far extent', examples: [{ jp: '細部に至るまで', romaji: 'saibu ni itaru made', en: 'even to the smallest details' }] },
-  { id: 'n1g33', level: 'N1', pattern: '〜にかかわる', meaning: 'concerning / affecting', bn: 'জড়িত / সংক্রান্ত', explanation: 'Directly affecting something important', examples: [{ jp: '命にかかわる', romaji: 'inochi ni kakawaru', en: 'affecting life (vital)' }] },
-  { id: 'n1g34', level: 'N1', pattern: '〜にかたくない', meaning: 'easy to ... (not hard to)', bn: 'সহজেই (অনুমান করা যায়)', explanation: 'Easy to imagine/feel (formal)', examples: [{ jp: '想像にかたくない', romaji: 'souzou ni katakunai', en: 'it is not hard to imagine' }] },
-  { id: 'n1g35', level: 'N1', pattern: '〜に限ったことではない', meaning: 'not limited to...', bn: 'কেবলমাত্র এর মধ্যেই সীমাবদ্ধ নয়', explanation: 'Applies to others as well', examples: [{ jp: '彼に限ったことではない', romaji: 'kare ni kagitta koto de wa nai', en: 'it is not limited to just him' }] },
-  { id: 'n1g36', level: 'N1', pattern: '〜にこしたことはない', meaning: 'it is best that...', bn: 'ভালো হয় যদি', explanation: 'Nothing better than...', examples: [{ jp: '用心にこしたことはない', romaji: 'youjin ni koshita koto wa nai', en: 'it is best to be cautious' }] },
-  { id: 'n1g37', level: 'N1', pattern: '〜にたえる', meaning: 'worth / bearable', bn: 'যোগ্য / সহ্যযোগ্য', explanation: 'Worthy of something formal', examples: [{ jp: '鑑賞にたえる', romaji: 'kanshou ni taeru', en: 'worth watching' }] },
-  { id: 'n1g38', level: 'N1', pattern: '〜にたえない', meaning: 'cannot bear / overwhelmed with', bn: 'অসহ্য / অভিভূত', explanation: 'Extreme emotion', examples: [{ jp: '感謝にたえない', romaji: 'kansha ni taenai', en: 'overwhelmed with gratitude' }] },
-  { id: 'n1g39', level: 'N1', pattern: '〜に足る', meaning: 'be worth / sufficient', bn: 'যোগ্য', explanation: 'Deserving of a reaction/state', examples: [{ jp: '信頼に足る', romaji: 'shinrai ni taru', en: 'worth trusting' }] },
-  { id: 'n1g40', level: 'N1', pattern: '〜にのっとって', meaning: 'in accordance with...', bn: 'অনুসারে', explanation: 'Following a tradition/rule', examples: [{ jp: '伝統にのっとって', romaji: 'dentou ni nottotte', en: 'following tradition' }] },
-  { id: 'n1g41', level: 'N1', pattern: '〜には及ばない', meaning: 'no need to... / not reach', bn: 'প্রয়োজন নেই / পৌঁছানো যায় না', explanation: 'Unnecessary or inferior', examples: [{ jp: '心配には及ばない', romaji: 'shinpai ni wa oyobanai', en: 'there is no need to worry' }] },
-  { id: 'n1g42', level: 'N1', pattern: '〜にひきかえ', meaning: 'in contrast to...', bn: 'বিপরীতে', explanation: 'Strong contrast between two things', examples: [{ jp: '先月にひきかえ', romaji: 'sengetsu ni hikikae', en: 'in contrast to last month' }] },
-  { id: 'n1g43', level: 'N1', pattern: '〜にまつわる', meaning: 'related to / surrounding', bn: 'জড়িত / সংক্রান্ত', explanation: 'Associated with X', examples: [{ jp: '事件にまつわる', romaji: 'jiken ni matsuwaru', en: 'surrounding the incident' }] },
-  { id: 'n1g44', level: 'N1', pattern: '〜の至りだ', meaning: 'the height of...', bn: 'চূড়ান্ত', explanation: 'Extreme state (formal)', examples: [{ jp: '光栄の至りだ', romaji: 'kouei no itari da', en: 'the height of honor' }] },
-  { id: 'n1g45', level: 'N1', pattern: '〜の極みだ', meaning: 'the ultimate ...', bn: 'চরম', explanation: 'Highest degree of something', examples: [{ jp: '贅沢の極みだ', romaji: 'zeitaku no kiwami da', en: 'the ultimate luxury' }] },
-  { id: 'n1g46', level: 'N1', pattern: '〜はさておき', meaning: 'setting aside...', bn: 'বাদ দিয়ে', explanation: 'Changing focus (formal)', examples: [{ jp: '冗談はさておき', romaji: 'joudan wa sateoki', en: 'jokes aside' }] },
-  { id: 'n1g47', level: 'N1', pattern: '〜ひとり〜のみならず', meaning: 'not only ... but also', bn: 'কেবলমাত্র নয়', explanation: 'Formal addition', examples: [{ jp: 'ひとり国内のみならず', romaji: 'hitori kokunai nomi narazu', en: 'not only domestically but also...' }] },
-  { id: 'n1g48', level: 'N1', pattern: '〜まじき', meaning: 'must not / unpardonable', bn: 'করতে নেই', explanation: 'Strong moral prohibition', examples: [{ jp: '公務員にあるまじき', romaji: 'koumuin ni arumajiki', en: 'unpardonable for a civil servant' }] },
-  { id: 'n1g49', level: 'N1', pattern: '〜を皮切りに', meaning: 'starting from...', bn: 'দিয়ে শুরু', explanation: 'First in a series of events', examples: [{ jp: '東京を皮切りに全国で', romaji: 'Toukyou wo kawakiri ni zenkoku de', en: 'starting with Tokyo, then nationwide' }] },
-  { id: 'n1g50', level: 'N1', pattern: '〜を禁じ得ない', meaning: 'cannot help but feel...', bn: 'না করে পারা যায় না', explanation: 'Can\'t suppress an emotion', examples: [{ jp: '同情を禁じ得ない', romaji: 'doujou wo kinjienai', en: 'cannot help but feel sympathy' }] },
-  { id: 'n1g51', level: 'N1', pattern: '〜をもって', meaning: 'by means of / at (time)', bn: 'মাধ্যমে / সময়ে', explanation: 'Formal medium or endpoint', examples: [{ jp: '今日をもって終了', romaji: 'kyou wo motte shuuryou', en: 'ending as of today' }] },
-  { id: 'n1g52', level: 'N1', pattern: '〜をものともせずに', meaning: 'defying...', bn: 'উপেক্ষা করে', explanation: 'Ignoring difficult conditions', examples: [{ jp: '荒波をものともせずに', romaji: 'aranami wo mono to mo sezu ni', en: 'defying the rough waves' }] },
-  { id: 'n1g53', level: 'N1', pattern: '〜をおいて他にない', meaning: 'there is no one/thing but...', bn: 'ছাড়া আর নেই', explanation: 'Uniqueness', examples: [{ jp: 'これをおいて他にない', romaji: 'kore wo oite hoka ni nai', en: 'there is nothing but this' }] },
-  { id: 'n1g54', level: 'N1', pattern: '〜を限りに', meaning: 'as the last / ending with...', bn: 'শেষবারের মতো', explanation: 'Final point/cutoff', examples: [{ jp: 'このチャンスを限りに', romaji: 'kono chansu wo kagiri ni', en: 'ending with this chance' }] },
-  { id: 'n1g55', level: 'N1', pattern: '〜んがために', meaning: 'in order to...', bn: 'করার জন্য (দৃঢ়)', explanation: 'Formal strong purpose', examples: [{ jp: '夢をかなえんがために', romaji: 'yume wo kanaen ga tame ni', en: 'in order to fulfill the dream' }] },
-  { pattern: '〜なり', meaning: 'As soon as / In one\'s own way', bn: 'সাথে সাথেই / স্বকীয়ভাবে', explanation: 'Immediate action or individual style', examples: [{ jp: '帰れるなり', romaji: 'kaeru nari', en: 'as soon as I returned' }] },
-  { pattern: '〜にひきかえ', meaning: 'In contrast to...', bn: 'বিপরীতে', explanation: 'Strong contrast', examples: [{ jp: '兄にひきかえ', romaji: 'ani ni hikikae', en: 'in contrast to his older brother' }] },
-  { pattern: '〜にもまして', meaning: 'Even more than...', bn: 'চেয়েও বেশি', explanation: 'Surpassing even a high level', examples: [{ jp: '以前にもまして', romaji: 'izen ni mo mashite', en: 'even more than before' }] },
-  { pattern: '〜ばこそ', meaning: 'Only because...', bn: 'কেবল কারণেই', explanation: 'Sole reason (often positive)', examples: [{ jp: '愛していればこそ', romaji: 'ai shite ireba koso', en: 'only because I love you' }] },
-  { pattern: '〜ひとり〜だけでなく', meaning: 'Not only / Not merely', bn: 'কেবলমাত্র নয়', explanation: 'Formal "not only"', examples: [{ jp: 'ひとり彼だけでなく', romaji: 'hitori kare dake de naku', en: 'not only him' }] },
-  { pattern: '〜べからず', meaning: 'Must not (obsolete/prohibition)', bn: 'নিষেধ', explanation: 'Written prohibition', examples: [{ jp: '入るべからず', romaji: 'hairu bekarazu', en: 'do not enter' }] },
-  { pattern: '〜まじき', meaning: 'Must not / Unforgivable', bn: 'করতে নেই', explanation: 'Strong moral prohibition', examples: [{ jp: 'あるまじき行為', romaji: 'aru majiki koui', en: 'unpardonable act' }] },
-  { pattern: '〜までもない', meaning: 'No need to...', bn: 'প্রয়োজন নেই', explanation: 'It\'s so obvious that...', examples: [{ jp: '言うまでもない', romaji: 'iu made mo nai', en: 'no need to say (it\'s obvious)' }] },
-  { pattern: '〜めく', meaning: 'Seem like / -ish', bn: 'মতো হওয়া', explanation: 'Acquire the characteristics of', examples: [{ jp: '春めく', romaji: 'harumeku', en: 'become spring-like' }] },
-  { pattern: '〜もさることながら', meaning: 'Needless to say / Not to mention', bn: 'বলা বাহুল্য', explanation: 'Highlighting second point over first', examples: [{ jp: '味もさることながら', romaji: 'aji mo sarukoto nagara', en: 'not to mention the taste (but also ...)' }] },
-  { pattern: '〜をおいてほかにない', meaning: 'There is no one but...', bn: 'ছাড়া কেউ নেই', explanation: 'Uniqueness', examples: [{ jp: '君をおいてほかにない', romaji: 'kimi wo oite hoka ni nai', en: 'there is no one but you' }] },
-  { pattern: '〜をものともせずに', meaning: 'Defying...', bn: ' উপেক্ষা করে', explanation: 'Overcoming obstacles', examples: [{ jp: '困難をものともせずに', romaji: 'konnan wo mono to mo sezu ni', en: 'defying difficulties' }] },
-  { pattern: '〜んがため', meaning: 'In order to...', bn: 'করার জন্য', explanation: 'Formal purpose', examples: [{ jp: '勝たんがため', romaji: 'katan ga tame', en: 'in order to win' }] }
-];
+// ==================== EXPORTED DATA LAYERS ====================
 
-export default {
+// KANA
+export const HIRAGANA = RAW_HIRAGANA || [];
+export const KATAKANA = RAW_KATAKANA || [];
+
+// KANJI
+export const N5_KANJI = (N5_KANJI_MASSIVE && N5_KANJI_MASSIVE.length > 0) ? N5_KANJI_MASSIVE : (RAW_N5_KANJI || []);
+export const N4_KANJI = (N4_KANJI_MASSIVE && N4_KANJI_MASSIVE.length > 0) ? N4_KANJI_MASSIVE : (RAW_N4_KANJI || []);
+
+// GRAMMAR
+export const ZEN_GRAMMAR = RAW_ZEN_GRAMMAR || { N5: [], N4: [] };
+export const COMBINED_GRAMMAR = getCombinedGrammar(ZEN_GRAMMAR);
+export const N5_GRAMMAR = RAW_N5_GRAMMAR || (ZEN_GRAMMAR.N5 || []);
+export const N4_GRAMMAR = ZEN_GRAMMAR.N4 || [];
+export const N3_GRAMMAR = ZEN_GRAMMAR.N3 || [];
+export const N2_GRAMMAR = ZEN_GRAMMAR.N2 || [];
+export const N1_GRAMMAR = ZEN_GRAMMAR.N1 || [];
+
+// VOCABULARY
+export const ZEN_LEXICON = RAW_ZEN_LEXICON || [];
+export const N5_VOCABULARY = RAW_N5_VOCABULARY || [];
+export const N4_VOCABULARY = []; // Currently empty placeholder
+
+// READING & SENTENCES
+export const MASSIVE_SENTENCES = RAW_MASSIVE_SENTENCES || [];
+export const MASSIVE_STORIES = RAW_MASSIVE_STORIES || [];
+
+// ==================== CLEANED / SPECIALIZED EXPORTS ====================
+export const ZEN_LEXICON_CLEAN = ZEN_LEXICON;
+export const ZEN_GRAMMAR_CLEAN = COMBINED_GRAMMAR;
+export const COMBINED_GRAMMAR_CLEAN = COMBINED_GRAMMAR;
+
+// Default export
+const JapaneseData = {
   HIRAGANA,
   KATAKANA,
   N5_KANJI,
   N4_KANJI,
-  N5_VOCABULARY,
-  N4_VOCABULARY,
   N5_GRAMMAR,
   N4_GRAMMAR,
   N3_GRAMMAR,
   N2_GRAMMAR,
   N1_GRAMMAR,
-  PRACTICE_SENTENCES,
-  MASSIVE_N5_VOCAB,
-  MASSIVE_N4_VOCAB,
+  N5_VOCABULARY,
+  N4_VOCABULARY,
+  ZEN_LEXICON,
+  ZEN_GRAMMAR,
+  COMBINED_GRAMMAR,
   MASSIVE_SENTENCES,
+  MASSIVE_STORIES,
+  ZEN_LEXICON_CLEAN,
+  ZEN_GRAMMAR_CLEAN,
+  COMBINED_GRAMMAR_CLEAN,
   RANDOM_NAMES,
   AVATAR_EMOJIS,
   LEVEL_TITLES,
   BADGES
 };
+
+
+export default JapaneseData;
